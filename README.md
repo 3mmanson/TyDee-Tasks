@@ -1,18 +1,10 @@
 # TyDee Tasks
 
-Task management app with React frontend and Node.js/Express backend. Runs fully offline with SQLite.
+Task management app with React frontend, Node.js/Express backend, and Turso (cloud SQLite).
 
-## Download (Windows)
+**Live app: https://tydee-tasks.onrender.com**
 
-Download **[TyDee-Tasks.zip](https://github.com/3mmanson/TyDee-Tasks/releases/download/v1.0.0/TyDee-Tasks.zip)** from Releases.
-
-1. Extract the ZIP
-2. Double-click **Start.bat**
-3. Browser opens to http://localhost:3000
-
-No Node.js installation required — it's bundled.
-
-## Developer Setup
+## Tech Stack
 
 ```bash
 npm install
