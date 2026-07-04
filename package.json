@@ -6,9 +6,8 @@
   "scripts": {
     "start": "node build-entry.js",
     "dev": "node build-entry.js",
-    "build": "cd frontend && npm run build",
-    "build-exe": "npm run build && node build-exe.js",
-    "setup": "npm install && cd frontend && npm install && cd .. && npm run build"
+    "build": "cd frontend && npm install && npm run build",
+    "setup": "npm install && npm run build"
   },
   "keywords": [
     "task-manager",
