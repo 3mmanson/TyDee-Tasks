@@ -61,7 +61,8 @@ async function run(sql, params = []) {
   const database = await getDb();
   database.run(sql, params);
   const changes = database.getRowsModified();
-  const lastId = database.exec('SELECT last_insert_rowid() as id')[0]?.values[0][0];
+  const res = database.exec('SELECT last_insert_rowid() as id');
+  const lastId = res.length > 0 ? res[0].values[0][0] : undefined;
   markDirty();
   return { changes, lastInsertRowid: lastId };
 }

@@ -35,8 +35,8 @@ const authController = {
       const user = await User.create({ username, email, password: hashedPassword });
 
       res.status(201).json({ success: true, data: user });
-    } catch (error) {
-      res.status(500).json({ success: false, error: 'Server error: ' + error.message });
+    } catch (err) {
+      res.status(500).json({ success: false, error: 'Server error: ' + (err instanceof Error ? err.message : String(err)) });
     }
   },
 
@@ -72,8 +72,8 @@ const authController = {
         token,
         data: userWithoutPassword
       });
-    } catch (error) {
-      res.status(500).json({ success: false, error: 'Server error: ' + error.message });
+    } catch (err) {
+      res.status(500).json({ success: false, error: 'Server error: ' + (err instanceof Error ? err.message : String(err)) });
     }
   },
 
@@ -81,7 +81,7 @@ const authController = {
   async getMe(req, res) {
     try {
       const userId = req.user.userId;
-      const user = await User.findById(userId);
+      const user = await User.getById(userId);
 
       if (!user) {
         return res.status(404).json({ success: false, error: 'User not found' });
@@ -89,8 +89,8 @@ const authController = {
 
       const { password, ...userWithoutPassword } = user;
       res.json({ success: true, data: userWithoutPassword });
-    } catch (error) {
-      res.status(500).json({ success: false, error: 'Server error: ' + error.message });
+    } catch (err) {
+      res.status(500).json({ success: false, error: 'Server error: ' + (err instanceof Error ? err.message : String(err)) });
     }
   },
 
@@ -154,8 +154,8 @@ const authController = {
       await PasswordResetToken.markUsed(token);
 
       res.json({ success: true, message: 'Password reset successful' });
-    } catch (error) {
-      res.status(500).json({ success: false, error: 'Server error: ' + error.message });
+    } catch (err) {
+      res.status(500).json({ success: false, error: 'Server error: ' + (err instanceof Error ? err.message : String(err)) });
     }
   }
 };
