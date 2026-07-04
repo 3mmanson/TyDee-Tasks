@@ -1,7 +1,7 @@
 module.exports = {
   client: 'better-sqlite3',
   connection: {
-    filename: './tasks.db'
+    filename: process.env.DB_PATH || './tasks.db'
   },
   useNullAsDefault: true,
   migrations: {

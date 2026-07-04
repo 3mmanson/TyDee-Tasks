@@ -1,32 +1,28 @@
-const db = require('./database');
+const { query, run } = require('./database');
 const crypto = require('crypto');
-
-const TABLE_NAME = 'password_reset_tokens';
 
 class PasswordResetToken {
   static async create(userId) {
     const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-    await db(TABLE_NAME).where({ user_id: userId }).update({ used: true });
+    await run('UPDATE password_reset_tokens SET used = 1 WHERE user_id = ?', [userId]);
 
-    const [id] = await db(TABLE_NAME).insert({
-      user_id: userId,
-      token,
-      expires_at: expiresAt,
-      used: false,
-      created_at: db.fn.now()
-    });
+    const result = await run(
+      'INSERT INTO password_reset_tokens (user_id, token, expires_at, used, created_at) VALUES (?, ?, ?, 0, ?)',
+      [userId, token, expiresAt, new Date().toISOString()]
+    );
 
-    return { id, token, expires_at: expiresAt };
+    return { id: result.lastInsertRowid, token, expires_at: expiresAt };
   }
 
   static async findByToken(token) {
-    return db(TABLE_NAME).where({ token, used: false }).first();
+    const rows = await query('SELECT * FROM password_reset_tokens WHERE token = ? AND used = 0', [token]);
+    return rows[0] || null;
   }
 
   static async markUsed(token) {
-    return db(TABLE_NAME).where({ token }).update({ used: true });
+    return run('UPDATE password_reset_tokens SET used = 1 WHERE token = ?', [token]);
   }
 }
 

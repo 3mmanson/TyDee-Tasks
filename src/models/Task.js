@@ -1,46 +1,35 @@
-const db = require('./database');
-
-const TABLE_NAME = 'tasks';
+const { query, run } = require('./database');
 
 class Task {
   static async getAll(userId) {
-    return db(TABLE_NAME).where({ user_id: userId }).orderBy('created_at', 'desc');
+    return query('SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC', [userId]);
   }
 
   static async getById(id, userId) {
-    return db(TABLE_NAME).where({ id, user_id: userId }).first();
+    const rows = await query('SELECT * FROM tasks WHERE id = ? AND user_id = ?', [id, userId]);
+    return rows[0] || null;
   }
 
   static async create({ title, description, status, userId, priority, due_date }) {
-    const [id] = await db(TABLE_NAME).insert({
-      title,
-      description,
-      status: status || 'pending',
-      user_id: userId,
-      priority: priority || 'Medium',
-      due_date: due_date || null,
-      created_at: db.fn.now(),
-      updated_at: db.fn.now()
-    });
-    return this.getById(id, userId);
+    const now = new Date().toISOString();
+    const result = await run(
+      'INSERT INTO tasks (title, description, status, user_id, priority, due_date, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [title, description || null, status || 'pending', userId, priority || 'Medium', due_date || null, now, now]
+    );
+    return this.getById(result.lastInsertRowid, userId);
   }
 
   static async update(id, userId, { title, description, status, priority, due_date }) {
-    await db(TABLE_NAME)
-      .where({ id, user_id: userId })
-      .update({
-        title,
-        description,
-        status,
-        priority,
-        due_date,
-        updated_at: db.fn.now()
-      });
+    const now = new Date().toISOString();
+    await run(
+      'UPDATE tasks SET title = ?, description = ?, status = ?, priority = ?, due_date = ?, updated_at = ? WHERE id = ? AND user_id = ?',
+      [title, description, status, priority, due_date, now, id, userId]
+    );
     return this.getById(id, userId);
   }
 
   static async delete(id, userId) {
-    return db(TABLE_NAME).where({ id, user_id: userId }).del();
+    return run('DELETE FROM tasks WHERE id = ? AND user_id = ?', [id, userId]);
   }
 }
 

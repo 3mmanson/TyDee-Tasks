@@ -1,36 +1,35 @@
 {
-  "name": "demo_crud_rest_api",
+  "name": "tydee-tasks",
   "version": "1.0.0",
-  "description": "Task Management REST API with Node.js, Express, and SQLite",
-  "main": "src/server.js",
+  "description": "Task Management App - standalone executable",
+  "main": "build-entry.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "node src/server.js",
+    "start": "node build-entry.js",
+    "dev": "node build-entry.js",
     "build": "cd frontend && npm run build",
-    "setup": "npm install && cd frontend && npm install && cd .. && npm run build && npm run migrate && npm run seed",
-    "migrate": "knex migrate:latest",
-    "migrate:rollback": "knex migrate:rollback",
-    "seed": "node src/seeds/seed.js",
-    "db:reset": "knex migrate:rollback && knex migrate:latest && node src/seeds/seed.js"
+    "build-exe": "npm run build && node build-exe.js",
+    "setup": "npm install && cd frontend && npm install && cd .. && npm run build"
   },
   "keywords": [
-    "rest-api",
+    "task-manager",
     "crud",
     "express",
     "sqlite",
-    "knex"
+    "sql.js"
   ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^3.0.3",
-    "better-sqlite3": "^12.9.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "joi": "^18.1.2",
     "jsonwebtoken": "^9.0.3",
-    "knex": "^3.2.9",
-    "sqlite3": "^6.0.1"
+    "sql.js": "^1.14.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.1",
+    "postject": "^1.0.0-alpha.6"
   }
 }

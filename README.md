@@ -2,70 +2,48 @@
 
 Task management app with React frontend and Node.js/Express backend. Runs fully offline with SQLite.
 
-## Quick Start
+## Download (Windows)
+
+Download **[TyDee-Tasks.zip](https://github.com/3mmanson/TyDee-Tasks/releases/download/v1.0.0/TyDee-Tasks.zip)** from Releases.
+
+1. Extract the ZIP
+2. Double-click **Start.bat**
+3. Browser opens to http://localhost:3000
+
+No Node.js installation required — it's bundled.
+
+## Developer Setup
 
 ```bash
-# Install dependencies and build everything
-npm run setup
-
-# Start the app
-npm start
-```
-
-Open `http://localhost:3000` in your browser.
-
-## Prerequisites
-
-- [Node.js](https://nodejs.org/) v18 or higher
-
-That's it. No database server, no internet required after install.
-
-## Manual Setup
-
-```bash
-# Install backend dependencies
 npm install
-
-# Install and build frontend
-cd frontend && npm install && cd .. && npm run build
-
-# Set up database
-npm run migrate
-npm run seed
-
-# Start
+cd frontend && npm install && cd ..
+npm run build
 npm start
 ```
+
+Open `http://localhost:3000`.
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and set your values:
-
-```bash
-cp .env.example .env
-```
-
-| Variable     | Description                  | Default |
-|-------------|------------------------------|---------|
-| `JWT_SECRET` | Secret key for JWT tokens   | (none)  |
-| `PORT`       | Server port                 | 3000    |
+| Variable     | Description              | Default |
+|-------------|--------------------------|---------|
+| `JWT_SECRET` | Secret key for JWT tokens | Auto-generated |
+| `PORT`       | Server port              | 3000    |
+| `DB_PATH`    | Database file path       | ./data/tasks.db |
 
 ## Project Structure
 
 ```
 TyDee-Tasks/
 ├── frontend/           # React frontend (Vite)
-│   ├── src/
-│   └── dist/           # Built frontend (served by Express)
+│   └── src/
 ├── src/
 │   ├── controllers/    # Route handlers
-│   ├── models/         # Database models
+│   ├── models/         # Database models (sql.js)
 │   ├── routes/         # API routes
-│   ├── validators/     # Input validation
-│   ├── migrations/     # Database migrations
-│   └── seeds/          # Sample data
-├── .env.example        # Environment template
-├── knexfile.js         # Database config
+│   └── validators/     # Input validation
+├── build-entry.js      # Entry point (DB init + server start)
+├── knexfile.js         # Legacy config (unused)
 └── package.json
 ```
 
@@ -88,5 +66,5 @@ TyDee-Tasks/
 
 - **Frontend**: React, Vite, Tailwind CSS
 - **Backend**: Node.js, Express
-- **Database**: SQLite (via Knex.js)
+- **Database**: SQLite (via sql.js — pure WASM, no native bindings)
 - **Auth**: JWT (bcrypt for passwords)

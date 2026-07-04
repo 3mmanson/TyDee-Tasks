@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const taskRoutes = require('./routes/taskRoutes');
 const authRoutes = require('./routes/authRoutes');
 
@@ -13,7 +14,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve frontend static files
-app.use(express.static(path.join(__dirname, '..', 'frontend', 'dist')));
+const frontendDist = fs.existsSync(path.join(__dirname, '..', 'frontend', 'dist'))
+  ? path.join(__dirname, '..', 'frontend', 'dist')
+  : path.join(__dirname, '..', 'frontend-dist');
+app.use(express.static(frontendDist));
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -21,7 +25,7 @@ app.use('/api/tasks', taskRoutes);
 
 // Client-side routing fallback
 app.get('/{*splat}', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'frontend', 'dist', 'index.html'));
+  res.sendFile(path.join(frontendDist, 'index.html'));
 });
 
 // Error handler

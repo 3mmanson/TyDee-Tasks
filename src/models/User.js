@@ -1,38 +1,34 @@
-const db = require('./database');
-
-const TABLE_NAME = 'users';
+const { query, run } = require('./database');
 
 class User {
   static async findByEmail(email) {
-    return db(TABLE_NAME).where({ email }).first();
+    const rows = await query('SELECT * FROM users WHERE email = ?', [email]);
+    return rows[0] || null;
   }
 
   static async findByUsername(username) {
-    return db(TABLE_NAME).where({ username }).first();
+    const rows = await query('SELECT * FROM users WHERE username = ?', [username]);
+    return rows[0] || null;
   }
 
   static async create({ username, email, password }) {
-    const [id] = await db(TABLE_NAME).insert({
-      username,
-      email,
-      password,
-      created_at: db.fn.now(),
-      updated_at: db.fn.now()
-    });
-    return this.getById(id);
+    const now = new Date().toISOString();
+    const result = await run(
+      'INSERT INTO users (username, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+      [username, email, password, now, now]
+    );
+    return this.getById(result.lastInsertRowid);
   }
 
   static async updatePassword(id, hashedPassword) {
-    return db(TABLE_NAME).where({ id }).update({
-      password: hashedPassword,
-      updated_at: db.fn.now()
-    });
+    const now = new Date().toISOString();
+    return run('UPDATE users SET password = ?, updated_at = ? WHERE id = ?', [hashedPassword, now, id]);
   }
 
   static async getById(id) {
-    const user = await db(TABLE_NAME).where({ id }).first();
-    if (user) {
-      const { password, ...userWithoutPassword } = user;
+    const rows = await query('SELECT * FROM users WHERE id = ?', [id]);
+    if (rows[0]) {
+      const { password, ...userWithoutPassword } = rows[0];
       return userWithoutPassword;
     }
     return null;
