@@ -2,8 +2,11 @@ services:
   - type: web
     name: tydee-tasks
     runtime: node
+    buildCommand: npm install
     startCommand: node build-entry.js
     envVars:
+      - key: NODE_VERSION
+        value: 20
       - key: JWT_SECRET
         generateValue: true
       - key: TURSO_DATABASE_URL
