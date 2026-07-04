@@ -2,7 +2,6 @@ services:
   - type: web
     name: tydee-tasks
     runtime: node
-    buildCommand: cd frontend && npm install && npm run build
     startCommand: node build-entry.js
     envVars:
       - key: JWT_SECRET
