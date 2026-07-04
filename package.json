@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node src/server.js",
+    "build": "cd frontend && npm run build",
+    "setup": "npm install && cd frontend && npm install && cd .. && npm run build && npm run migrate && npm run seed",
     "migrate": "knex migrate:latest",
     "migrate:rollback": "knex migrate:rollback",
     "seed": "node src/seeds/seed.js",

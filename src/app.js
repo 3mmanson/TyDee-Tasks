@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const taskRoutes = require('./routes/taskRoutes');
 const authRoutes = require('./routes/authRoutes');
 
@@ -11,18 +12,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check
-app.get('/', (req, res) => {
-  res.json({ message: 'Task Management API', status: 'running' });
-});
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, '..', 'frontend', 'dist')));
 
-// Routes
+// API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ success: false, error: 'Route not found' });
+// Client-side routing fallback
+app.get('/{*splat}', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'frontend', 'dist', 'index.html'));
 });
 
 // Error handler

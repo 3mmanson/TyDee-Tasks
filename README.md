@@ -1,233 +1,92 @@
-# Task Management REST API
+# TyDee Tasks
 
-A complete CRUD REST API for task management built with Node.js, Express, and SQLite.
+Task management app with React frontend and Node.js/Express backend. Runs fully offline with SQLite.
 
-## Tech Stack
+## Quick Start
 
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: SQLite (local file-based)
-- **ORM**: Knex.js (for migrations and queries)
-- **Validation**: Joi
+```bash
+# Install dependencies and build everything
+npm run setup
+
+# Start the app
+npm start
+```
+
+Open `http://localhost:3000` in your browser.
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) v18 or higher
+
+That's it. No database server, no internet required after install.
+
+## Manual Setup
+
+```bash
+# Install backend dependencies
+npm install
+
+# Install and build frontend
+cd frontend && npm install && cd .. && npm run build
+
+# Set up database
+npm run migrate
+npm run seed
+
+# Start
+npm start
+```
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and set your values:
+
+```bash
+cp .env.example .env
+```
+
+| Variable     | Description                  | Default |
+|-------------|------------------------------|---------|
+| `JWT_SECRET` | Secret key for JWT tokens   | (none)  |
+| `PORT`       | Server port                 | 3000    |
 
 ## Project Structure
 
 ```
-Demo_CRUD_REST_API/
+TyDee-Tasks/
+├── frontend/           # React frontend (Vite)
+│   ├── src/
+│   └── dist/           # Built frontend (served by Express)
 ├── src/
-│   ├── controllers/    # Request handlers
-│   ├── models/         # Data access layer
-│   ├── routes/         # API route definitions
-│   ├── validators/     # Input validation schemas
+│   ├── controllers/    # Route handlers
+│   ├── models/         # Database models
+│   ├── routes/         # API routes
+│   ├── validators/     # Input validation
 │   ├── migrations/     # Database migrations
-│   ├── seeds/          # Database seed data
-│   ├── app.js          # Express app configuration
-│   └── server.js       # Server entry point
-├── knexfile.js         # Knex configuration
-├── tasks.db            # SQLite database file
+│   └── seeds/          # Sample data
+├── .env.example        # Environment template
+├── knexfile.js         # Database config
 └── package.json
 ```
 
-## Installation
-
-```bash
-npm install
-```
-
-## Setup
-
-1. Run migrations to create the database schema:
-```bash
-npm run migrate
-```
-
-2. Seed the database with sample data:
-```bash
-npm run seed
-```
-
-3. Start the server:
-```bash
-npm start
-```
-
-The API will be available at `http://local/host:3000`
-
 ## API Endpoints
 
-| Method | Endpoint      | Description         |
-|--------|---------------|---------------------|
-| GET    | /api/tasks    | Get all tasks       |
-| GET    | /api/tasks/:id| Get task by ID      |
-| POST   | /api/tasks    | Create new task     |
-| PUT    | /api/tasks/:id| Update task         |
-| DELETE | /api/tasks/:id| Delete task         |
+| Method | Endpoint             | Description         |
+|--------|---------------------|---------------------|
+| POST   | /api/auth/register  | Register new user   |
+| POST   | /api/auth/login     | Login               |
+| GET    | /api/auth/me        | Get current user    |
+| POST   | /api/auth/forgot-password | Request reset  |
+| POST   | /api/auth/reset-password | Reset password  |
+| GET    | /api/tasks          | Get all tasks       |
+| GET    | /api/tasks/:id      | Get task by ID      |
+| POST   | /api/tasks          | Create task         |
+| PUT    | /api/tasks/:id      | Update task         |
+| DELETE | /api/tasks/:id      | Delete task         |
 
-## Testing with cURL
+## Tech Stack
 
-### 1. Get All Tasks
-
-```bash
-curl -X GET http://localhost:3000/api/tasks
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "count": 5,
-  "data": [
-    {
-      "id": 1,
-      "title": "Complete project documentation",
-      "description": "Write comprehensive documentation for the REST API project",
-      "status": "in_progress",
-      "created_at": "2026-04-23T...",
-      "updated_at": "2026-04-23T..."
-    }
-  ]
-}
-```
-
-### 2. Get Task by ID
-
-```bash
-curl -X GET http://localhost:3000/api/tasks/1
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "title": "Complete project documentation",
-    "description": "Write comprehensive documentation for the REST API project",
-    "status": "in_progress",
-    "created_at": "2026-04-23T...",
-    "updated_at": "2026-04-23T..."
-  }
-}
-```
-
-### 3. Create New Task
-
-```bash
-curl -X POST http://localhost:3000/api/tasks \
-  -H "Content-Type: application/json" \
-  -d "{\"title\":\"New Task\",\"description\":\"Task description\",\"status\":\"pending\"}"
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "id": 6,
-    "title": "New Task",
-    "description": "Task description",
-    "status": "pending",
-    "created_at": "2026-04-23T...",
-    "updated_at": "2026-04-23T..."
-  }
-}
-```
-
-### 4. Update Task
-
-```bash
-curl -X PUT http://localhost:3000/api/tasks/1 \
-  -H "Content-Type: application/json" \
-  -d "{\"title\":\"Updated Task\",\"description\":\"Updated description\",\"status\":\"completed\"}"
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "title": "Updated Task",
-    "description": "Updated description",
-    "status": "completed",
-    "created_at": "2026-04-23T...",
-    "updated_at": "2026-04-23T..."
-  }
-}
-```
-
-### 5. Delete Task
-
-```bash
-curl -X DELETE http://localhost:3000/api/tasks/1
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Task deleted successfully"
-}
-```
-
-### 6. Test Validation (Missing Required Field)
-
-```bash
-curl -X POST http://localhost:3000/api/tasks \
-  -H "Content-Type: application/json" \
-  -d "{\"description\":\"No title provided\"}"
-```
-
-**Response:**
-```json
-{
-  "success": false,
-  "error": "Validation failed",
-  "details": ["Title is required"]
-}
-```
-
-### 7. Test 404 (Task Not Found)
-
-```bash
-curl -X GET http://localhost:3000/api/tasks/999
-```
-
-**Response:**
-```json
-{
-  "success": false,
-  "error": "Task not found"
-}
-```
-
-## Task Schema
-
-| Field       | Type    | Required | Description                              |
-|-------------|---------|----------|------------------------------------------|
-| title       | string  | Yes      | Task title (1-255 characters)            |
-| description | string  | No       | Task description                         |
-| status      | string  | No       | One of: pending, in_progress, completed  |
-
-## Available Scripts
-
-| Command            | Description                                    |
-|--------------------|------------------------------------------------|
-| `npm start`        | Start the server                               |
-| `npm run migrate`  | Run database migrations                        |
-| `npm run seed`     | Seed database with sample data                 |
-| `npm run db:reset` | Reset database (rollback + migrate + seed)     |
-
-## Error Handling
-
-All endpoints return consistent JSON responses:
-
-**Success:**
-```json
-{ "success": true, "data": {...} }
-```
-
-**Error:**
-```json
-{ "success": false, "error": "Error message" }
-```
+- **Frontend**: React, Vite, Tailwind CSS
+- **Backend**: Node.js, Express
+- **Database**: SQLite (via Knex.js)
+- **Auth**: JWT (bcrypt for passwords)
