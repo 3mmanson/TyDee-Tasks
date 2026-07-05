@@ -3,8 +3,9 @@ import { api } from '../api/api';
 import Navbar from '../components/Layout/Navbar';
 import TaskList from '../components/Tasks/TaskList';
 import TaskForm from '../components/Tasks/TaskForm';
+import ActivityLog from '../components/ActivityLog';
 import { useNotifications } from '../hooks/useNotifications';
-import { Plus, Filter, Search } from 'lucide-react';
+import { Plus, Filter, Search, History } from 'lucide-react';
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
@@ -13,6 +14,7 @@ const Dashboard = () => {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [showActivity, setShowActivity] = useState(false);
 
   const fetchTasks = async () => {
     setIsLoading(true);
@@ -156,6 +158,17 @@ const Dashboard = () => {
           onTaskCreated={handleCreateOrUpdate}
           editingTask={editingTask}
         />
+
+        <div className="mt-8 border-t border-gray-200 pt-6">
+          <button
+            onClick={() => setShowActivity(!showActivity)}
+            className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-800 transition mb-4"
+          >
+            <History className="w-4 h-4" />
+            {showActivity ? 'Hide' : 'Show'} Activity History
+          </button>
+          {showActivity && <ActivityLog />}
+        </div>
       </main>
     </div>
   );

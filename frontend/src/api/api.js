@@ -79,4 +79,7 @@ export const api = {
     markAllRead: () => request('/notifications/read-all', { method: 'PUT' }),
     clearAll: () => request('/notifications', { method: 'DELETE' }),
   },
+  activity: {
+    getAll: () => request('/activity'),
+  },
 };

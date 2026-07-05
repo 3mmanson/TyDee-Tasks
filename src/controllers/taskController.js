@@ -1,4 +1,5 @@
 const Task = require('../models/Task');
+const ActivityLog = require('../models/ActivityLog');
 const { validateTask, validateTaskUpdate } = require('../validators/taskValidator');
 
 const taskController = {
@@ -39,6 +40,7 @@ const taskController = {
 
       const userId = req.user.userId;
       const task = await Task.create({ ...value, userId });
+      await ActivityLog.create({ userId, taskId: task.id, action: 'task_created', details: `Created "${task.title}"` });
       res.status(201).json({ success: true, data: task });
     } catch (err) {
       res.status(500).json({ success: false, error: 'Server error' });
@@ -65,6 +67,13 @@ const taskController = {
       }
 
       const task = await Task.update(id, userId, value);
+
+      if (value.status && value.status !== existingTask.status) {
+        await ActivityLog.create({ userId, taskId: id, action: 'status_changed', details: `Status changed from "${existingTask.status}" to "${value.status}"` });
+      } else {
+        await ActivityLog.create({ userId, taskId: id, action: 'task_updated', details: `Updated "${task.title}"` });
+      }
+
       res.json({ success: true, data: task });
     } catch (err) {
       res.status(500).json({ success: false, error: 'Server error' });
@@ -81,6 +90,7 @@ const taskController = {
         return res.status(404).json({ success: false, error: 'Task not found' });
       }
 
+      await ActivityLog.create({ userId, taskId: id, action: 'task_deleted', details: `Deleted "${existingTask.title}"` });
       await Task.delete(id, userId);
       res.json({ success: true, message: 'Task deleted successfully' });
     } catch (err) {
