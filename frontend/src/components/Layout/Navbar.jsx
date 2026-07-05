@@ -1,18 +1,27 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotificationContext } from '../../context/NotificationContext';
-import { LogOut, CheckCircle, Menu, X, Bell, Clock, AlertTriangle, Trash2 } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
+import { LogOut, Bell, Clock, AlertTriangle, Search, Plus, X, Menu, Trash2 } from 'lucide-react';
 
-const Navbar = () => {
+const Navbar = ({ onNewTask }) => {
   const { user, logout } = useAuth();
   const { notifications, unreadCount, isOpen, setIsOpen, markAsRead, markAllRead, clearAll } = useNotificationContext();
+  const { theme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyLogs, setHistoryLogs] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const dropdownRef = useRef(null);
+  const historyRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setIsOpen(false);
+      }
+      if (historyRef.current && !historyRef.current.contains(e.target)) {
+        setHistoryOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -21,9 +30,9 @@ const Navbar = () => {
 
   const getIcon = (type) => {
     switch (type) {
-      case 'overdue': return <AlertTriangle className="w-4 h-4 text-red-500" />;
-      case 'pending_reminder': return <Clock className="w-4 h-4 text-yellow-500" />;
-      default: return <Bell className="w-4 h-4 text-blue-500" />;
+      case 'overdue': return <AlertTriangle className="w-4 h-4" style={{ color: 'var(--color-negative)' }} />;
+      case 'pending_reminder': return <Clock className="w-4 h-4" style={{ color: 'var(--color-warning)' }} />;
+      default: return <Bell className="w-4 h-4" style={{ color: 'var(--color-active)' }} />;
     }
   };
 
@@ -35,58 +44,138 @@ const Navbar = () => {
     return `${Math.floor(diff / 86400000)}d ago`;
   };
 
+  const getInitials = (name) => {
+    if (!name) return '?';
+    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  const fetchHistory = async () => {
+    setHistoryLoading(true);
+    try {
+      const { api } = await import('../../api/api');
+      const res = await api.activity.getAll();
+      setHistoryLogs(res.data || []);
+    } catch {
+      setHistoryLogs([]);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
   return (
-    <nav className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sticky top-0 z-20">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <CheckCircle className="text-blue-600 w-6 h-6" />
-          <span className="text-xl font-bold text-gray-800">TyDee Tasks</span>
+    <nav
+      className="fixed top-0 left-0 right-0 z-30 border-b px-4 sm:px-6 py-3"
+      style={{
+        backgroundColor: 'var(--bg-secondary)',
+        borderColor: 'var(--stroke)',
+      }}
+    >
+      <div className="flex justify-between items-center max-w-6xl mx-auto">
+        {/* Logo */}
+        <a href="/dashboard" className="flex items-center gap-2 shrink-0">
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm"
+            style={{ backgroundColor: 'var(--color-active)', color: '#fff' }}
+          >
+            T
+          </div>
+          <span className="text-lg font-bold hidden sm:inline" style={{ color: 'var(--text-primary)' }}>
+            TyDee Tasks
+          </span>
+        </a>
+
+        {/* Center: Search (hidden on mobile) */}
+        <div className="hidden md:flex items-center flex-1 max-w-md mx-6">
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              className="w-full pl-10 pr-4 py-2 rounded-xl text-sm outline-none border"
+              style={{
+                backgroundColor: 'var(--bg-tertiary)',
+                borderColor: 'var(--stroke)',
+                color: 'var(--text-primary)',
+              }}
+            />
+          </div>
         </div>
 
-        <div className="hidden sm:flex items-center gap-3">
+        {/* Right: Actions */}
+        <div className="flex items-center gap-2">
+          {/* + New Task button */}
+          <button
+            onClick={onNewTask}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition min-h-[40px]"
+            style={
+              theme === 'dark'
+                ? { background: 'linear-gradient(to right, #FF2E95, #0076FF)', color: '#fff' }
+                : { backgroundColor: 'var(--color-active)', color: '#fff' }
+            }
+          >
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">New Task</span>
+          </button>
+
+          {/* Notification bell */}
           <div className="relative" ref={dropdownRef}>
             <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="relative p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-gray-100 transition"
+              onClick={() => { setIsOpen(!isOpen); setHistoryOpen(false); }}
+              className="relative p-2 rounded-xl transition"
+              style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover)'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
             >
-              <Bell className="w-5 h-5 text-gray-600" />
+              <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                <span
+                  className="absolute -top-0.5 -right-0.5 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1"
+                  style={{ backgroundColor: 'var(--color-negative)' }}
+                >
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
             </button>
 
             {isOpen && (
-              <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden z-50">
-                <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
-                  <span className="font-semibold text-gray-800 text-sm">Notifications</span>
+              <div
+                className="absolute right-0 top-full mt-2 w-80 rounded-xl shadow-xl overflow-hidden z-50 border"
+                style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--stroke)' }}
+              >
+                <div className="px-4 py-3 border-b flex justify-between items-center" style={{ borderColor: 'var(--stroke)' }}>
+                  <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>Notifications</span>
                   <div className="flex gap-2">
                     {unreadCount > 0 && (
-                      <button onClick={markAllRead} className="text-xs text-blue-600 hover:underline">Mark all read</button>
+                      <button onClick={markAllRead} className="text-xs hover:underline" style={{ color: 'var(--color-active)' }}>Mark all read</button>
                     )}
                     {notifications.length > 0 && (
-                      <button onClick={clearAll} className="text-xs text-gray-400 hover:text-red-500"><Trash2 className="w-3 h-3" /></button>
+                      <button onClick={clearAll} className="text-xs hover:opacity-70" style={{ color: 'var(--text-muted)' }}><Trash2 className="w-3 h-3" /></button>
                     )}
                   </div>
                 </div>
                 <div className="max-h-80 overflow-y-auto">
                   {notifications.length === 0 ? (
-                    <div className="py-8 text-center text-gray-400 text-sm">No notifications yet</div>
+                    <div className="py-8 text-center text-sm" style={{ color: 'var(--text-muted)' }}>No notifications yet</div>
                   ) : (
                     notifications.map(n => (
                       <div
                         key={n.id}
                         onClick={() => markAsRead(n.id)}
-                        className={`px-4 py-3 border-b border-gray-50 cursor-pointer hover:bg-gray-50 transition ${!n.read ? 'bg-blue-50/50' : ''}`}
+                        className="px-4 py-3 border-b cursor-pointer transition"
+                        style={{
+                          borderColor: 'var(--stroke)',
+                          backgroundColor: !n.read ? 'var(--color-active)' + '10' : 'transparent',
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover)'}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = !n.read ? 'var(--color-active)' + '10' : 'transparent'}
                       >
                         <div className="flex items-start gap-3">
                           {getIcon(n.type)}
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-800">{n.message}</p>
-                            <p className="text-xs text-gray-400 mt-1">{formatTime(n.created_at)}</p>
+                            <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{n.message}</p>
+                            <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{formatTime(n.created_at)}</p>
                           </div>
-                          {!n.read && <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 shrink-0" />}
+                          {!n.read && <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: 'var(--color-active)' }} />}
                         </div>
                       </div>
                     ))
@@ -95,47 +184,109 @@ const Navbar = () => {
               </div>
             )}
           </div>
-          <span className="text-sm text-gray-600">
-            Hello, <span className="font-semibold">{user?.username}</span>
-          </span>
+
+          {/* History clock */}
+          <div className="relative" ref={historyRef}>
+            <button
+              onClick={() => { setHistoryOpen(!historyOpen); setIsOpen(false); }}
+              className="p-2 rounded-xl transition"
+              style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover)'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <Clock className="w-5 h-5" />
+            </button>
+
+            {historyOpen && (
+              <div
+                className="absolute right-0 top-full mt-2 w-80 rounded-xl shadow-xl overflow-hidden z-50 border"
+                style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--stroke)' }}
+              >
+                <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--stroke)' }}>
+                  <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>Activity History</span>
+                </div>
+                <div className="max-h-80 overflow-y-auto">
+                  {historyLoading ? (
+                    <div className="py-8 text-center text-sm" style={{ color: 'var(--text-muted)' }}>Loading...</div>
+                  ) : historyLogs.length === 0 ? (
+                    <div className="py-8 text-center text-sm" style={{ color: 'var(--text-muted)' }}>No activity yet</div>
+                  ) : (
+                    historyLogs.map(log => (
+                      <div
+                        key={log.id}
+                        className="px-4 py-3 border-b"
+                        style={{ borderColor: 'var(--stroke)' }}
+                      >
+                        <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{log.details}</p>
+                        <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{formatTime(log.created_at)}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Avatar */}
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+            style={{ backgroundColor: 'var(--color-warning)', color: '#09090B' }}
+            title={user?.username}
+          >
+            {getInitials(user?.username)}
+          </div>
+
+          {/* Logout (desktop) */}
           <button
             onClick={logout}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-red-600 transition-colors min-h-[44px]"
+            className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-xl transition min-h-[40px]"
+            style={{ color: 'var(--text-secondary)' }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-negative)'; e.currentTarget.style.backgroundColor = 'var(--color-hover)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.backgroundColor = 'transparent'; }}
           >
             <LogOut className="w-4 h-4" />
-            <span>Logout</span>
+          </button>
+
+          {/* Mobile menu toggle */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="sm:hidden p-2 rounded-xl"
+            style={{ color: 'var(--text-secondary)' }}
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
-
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="sm:hidden p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
       </div>
 
+      {/* Mobile menu */}
       {menuOpen && (
-        <div className="sm:hidden border-t border-gray-100 mt-3 pt-3 flex flex-col gap-2">
+        <div
+          className="sm:hidden border-t mt-3 pt-3 flex flex-col gap-2"
+          style={{ borderColor: 'var(--stroke)' }}
+        >
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              className="w-full pl-10 pr-4 py-2 rounded-xl text-sm outline-none border"
+              style={{
+                backgroundColor: 'var(--bg-tertiary)',
+                borderColor: 'var(--stroke)',
+                color: 'var(--text-primary)',
+              }}
+            />
+          </div>
           <div className="flex items-center justify-between px-1">
-            <span className="text-sm text-gray-600">
-              Hello, <span className="font-semibold">{user?.username}</span>
+            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{user?.username}</span>
             </span>
-            <div className="relative">
-              <button onClick={() => setIsOpen(!isOpen)} className="relative p-2">
-                <Bell className="w-5 h-5 text-gray-600" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </span>
-                )}
-              </button>
-            </div>
           </div>
           <button
             onClick={logout}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-red-600 transition-colors min-h-[44px]"
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-xl transition min-h-[44px]"
+            style={{ color: 'var(--text-secondary)' }}
           >
             <LogOut className="w-4 h-4" />
             <span>Logout</span>
