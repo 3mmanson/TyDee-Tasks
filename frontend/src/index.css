@@ -6,12 +6,12 @@
   --radius-lg: 16px;
 
   /* Dark mode tokens (default) */
-  --color-primary: #CCFE10;
+  --color-primary: #22C55E;
   --color-secondary: rgba(255, 255, 255, 0.05);
   --color-hover: rgba(255, 255, 255, 0.2);
 
   --color-positive: #76FF76;
-  --color-positive-inv: #00F028;
+  --color-positive-inv: #16A34A;
   --color-warning: #FFC64C;
   --color-warning-inv: #F5A300;
   --color-negative: #FF7676;
@@ -35,7 +35,7 @@
   --color-hover: rgba(0, 0, 0, 0.08);
 
   --color-positive: #00A843;
-  --color-positive-inv: #00F028;
+  --color-positive-inv: #16A34A;
   --color-warning: #F5A300;
   --color-warning-inv: #C67C00;
   --color-negative: #E53935;

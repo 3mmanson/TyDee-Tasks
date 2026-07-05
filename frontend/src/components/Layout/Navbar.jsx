@@ -49,7 +49,7 @@ const Navbar = ({ onNewTask }) => {
         <a href="/dashboard" className="flex items-center gap-2 shrink-0">
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm"
-            style={{ backgroundColor: 'var(--color-positive-inv)', color: '#09090B' }}
+            style={{ backgroundColor: 'var(--color-positive-inv)', color: '#fff' }}
           >
             T
           </div>
@@ -78,8 +78,8 @@ const Navbar = ({ onNewTask }) => {
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition min-h-[40px]"
             style={
               theme === 'dark'
-                ? { background: 'linear-gradient(to right, #00F028, #CCFE10)', color: '#09090B' }
-                : { backgroundColor: '#00F028', color: '#09090B' }
+                ? { background: 'linear-gradient(to right, #16A34A, #4ADE80)', color: '#fff' }
+                : { backgroundColor: '#16A34A', color: '#fff' }
             }
           >
             <Plus className="w-4 h-4" />

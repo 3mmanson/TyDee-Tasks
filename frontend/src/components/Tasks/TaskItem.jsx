@@ -25,7 +25,7 @@ const TaskItem = ({ task, onDelete, onEdit, onToggleStatus }) => {
   const formatDueDate = (dueDate) => {
     if (!dueDate) return null;
     const d = new Date(dueDate);
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
   };
 
   const isOverdue = task.status === 'overdue';
