@@ -60,7 +60,7 @@ const KpiDashboard = () => {
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="p-4 rounded-xl border animate-pulse"
+            className="p-4 rounded-xl border animate-pulse glow-always card-light"
             style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--stroke)', borderRadius: 'var(--radius-lg)' }}
           >
             <div className="h-4 w-20 rounded mb-3" style={{ backgroundColor: 'var(--bg-tertiary)' }} />
@@ -86,7 +86,7 @@ const KpiDashboard = () => {
         return (
           <div
             key={kpi.key}
-            className="p-4 border transition-all hover:scale-[1.02]"
+            className="p-4 border transition-all hover:scale-[1.02] glow-always card-light"
             style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--stroke)', borderRadius: 'var(--radius-lg)' }}
           >
             <div className="flex items-center justify-between mb-2">

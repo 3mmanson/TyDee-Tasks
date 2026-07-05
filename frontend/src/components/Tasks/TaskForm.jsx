@@ -65,7 +65,7 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'var(--overlay)' }}>
       <div
-        className="w-full max-w-md overflow-hidden shadow-2xl"
+        className="w-full max-w-md overflow-hidden shadow-2xl glow-always card-light"
         style={{ backgroundColor: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)' }}
       >
         <div

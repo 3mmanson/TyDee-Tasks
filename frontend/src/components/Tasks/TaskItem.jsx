@@ -36,7 +36,7 @@ const TaskItem = ({ task, onDelete, onEdit, onToggleStatus }) => {
 
   return (
     <div
-      className="group relative flex items-center gap-4 px-4 py-3 rounded-xl border transition-all duration-150"
+      className="group relative flex items-center gap-4 px-4 py-3 rounded-xl border transition-all duration-150 glow-hover card-light"
       style={{
         backgroundColor: isOverdue ? 'var(--color-negative)' + '08' : 'var(--bg-secondary)',
         borderColor: isOverdue ? 'var(--color-negative)' + '40' : 'var(--stroke)',
