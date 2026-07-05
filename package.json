@@ -27,7 +27,8 @@
     "express-rate-limit": "^8.5.2",
     "helmet": "^8.2.0",
     "joi": "^18.1.2",
-    "jsonwebtoken": "^9.0.3"
+    "jsonwebtoken": "^9.0.3",
+    "resend": "^6.17.1"
   },
   "devDependencies": {
     "esbuild": "^0.28.1",

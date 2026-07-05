@@ -10,7 +10,7 @@ const authLimiter = rateLimit({
 
 const passwordResetLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3, // 3 reset requests per hour
+  max: 5, // 5 reset requests per hour
   message: { success: false, error: 'Too many password reset requests, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,

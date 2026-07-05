@@ -3,6 +3,7 @@ const PasswordResetToken = require('../models/PasswordResetToken');
 const { validateRegister, validateLogin, validateRequestReset, validateResetPassword } = require('../validators/authValidator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { sendPasswordResetEmail } = require('../services/email');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -115,18 +116,12 @@ const authController = {
 
       const resetToken = await PasswordResetToken.create(user.id);
 
-      const response = {
+      await sendPasswordResetEmail(user.email, resetToken.rawToken);
+
+      res.json({
         success: true,
         message: 'If the email exists, a reset link has been sent'
-      };
-
-      // Only expose token in development — production should use email delivery
-      if (process.env.NODE_ENV !== 'production') {
-        response.reset_token = resetToken.rawToken;
-        response.expires_at = resetToken.expires_at;
-      }
-
-      res.json(response);
+      });
     } catch (error) {
       res.status(500).json({ success: false, error: 'Server error' });
     }
