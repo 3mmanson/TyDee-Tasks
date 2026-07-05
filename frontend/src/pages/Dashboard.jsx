@@ -4,6 +4,7 @@ import Navbar from '../components/Layout/Navbar';
 import TaskList from '../components/Tasks/TaskList';
 import TaskForm from '../components/Tasks/TaskForm';
 import ActivityLog from '../components/ActivityLog';
+import KpiDashboard from '../components/KpiDashboard';
 import { useNotifications } from '../hooks/useNotifications';
 import { Search, History } from 'lucide-react';
 
@@ -109,6 +110,8 @@ const Dashboard = () => {
             <p className="text-sm sm:text-base" style={{ color: 'var(--text-muted)' }}>Manage your daily productivity</p>
           </div>
         </div>
+
+        <KpiDashboard />
 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
           <div className="relative flex-1">

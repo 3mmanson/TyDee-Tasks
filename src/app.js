@@ -7,6 +7,8 @@ const taskRoutes = require('./routes/taskRoutes');
 const authRoutes = require('./routes/authRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const activityRoutes = require('./routes/activityRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+const { migrate } = require('./models/database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -38,6 +40,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/activity', activityRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+
+// Run migrations
+migrate().catch(console.error);
 
 // Client-side routing fallback
 app.get('/{*splat}', (req, res) => {

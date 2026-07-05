@@ -24,9 +24,10 @@ class Task {
   static async update(id, userId, { title, description, status, priority, due_date }) {
     const now = new Date().toISOString();
     const dueDateStr = due_date || null;
+    const completedAt = status === 'completed' ? now : null;
     await run(
-      'UPDATE tasks SET title = ?, description = ?, status = ?, priority = ?, due_date = ?, updated_at = ? WHERE id = ? AND user_id = ?',
-      [title, description, status, priority, dueDateStr, now, id, userId]
+      'UPDATE tasks SET title = ?, description = ?, status = ?, priority = ?, due_date = ?, completed_at = ?, updated_at = ? WHERE id = ? AND user_id = ?',
+      [title, description, status, priority, dueDateStr, completedAt, now, id, userId]
     );
     return this.getById(id, userId);
   }
@@ -67,6 +68,83 @@ class Task {
       return { ...task, status: 'overdue' };
     }
     return task;
+  }
+
+  static async getStats(userId) {
+    const now = new Date();
+    const weekAgo = new Date(now);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const twoWeeksAgo = new Date(now);
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
+    const weekAgoStr = weekAgo.toISOString();
+    const twoWeeksAgoStr = twoWeeksAgo.toISOString();
+    const nowStr = now.toISOString();
+
+    // This week's completed
+    const thisWeekCompleted = await query(
+      'SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND completed_at IS NOT NULL AND completed_at >= ?',
+      [userId, weekAgoStr]
+    );
+    // Last week's completed
+    const lastWeekCompleted = await query(
+      'SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND completed_at IS NOT NULL AND completed_at >= ? AND completed_at < ?',
+      [userId, twoWeeksAgoStr, weekAgoStr]
+    );
+
+    // This week's pending (not completed, not overdue)
+    const thisWeekPending = await query(
+      "SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND status NOT IN ('completed') AND (due_date IS NULL OR due_date >= ?)",
+      [userId, nowStr]
+    );
+    const lastWeekPending = await query(
+      "SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND status NOT IN ('completed') AND (due_date IS NULL OR due_date >= ?) AND created_at < ?",
+      [userId, nowStr, weekAgoStr]
+    );
+
+    // At risk: overdue and not completed
+    const thisWeekAtRisk = await query(
+      "SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND status != 'completed' AND due_date IS NOT NULL AND due_date < ?",
+      [userId, nowStr]
+    );
+    const lastWeekAtRisk = await query(
+      "SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND status != 'completed' AND due_date IS NOT NULL AND due_date < ? AND created_at < ?",
+      [userId, nowStr, weekAgoStr]
+    );
+
+    // Completion rate: completed / (completed + pending due this week)
+    const thisWeekTotalDue = await query(
+      'SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND due_date IS NOT NULL AND due_date >= ? AND due_date <= ?',
+      [userId, weekAgoStr, nowStr]
+    );
+    const lastWeekTotalDue = await query(
+      'SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND due_date IS NOT NULL AND due_date >= ? AND due_date < ?',
+      [userId, twoWeeksAgoStr, weekAgoStr]
+    );
+
+    const tc = Number(thisWeekCompleted[0]?.count || 0);
+    const lc = Number(lastWeekCompleted[0]?.count || 0);
+    const tp = Number(thisWeekPending[0]?.count || 0);
+    const lp = Number(lastWeekPending[0]?.count || 0);
+    const ta = Number(thisWeekAtRisk[0]?.count || 0);
+    const la = Number(lastWeekAtRisk[0]?.count || 0);
+    const tt = Number(thisWeekTotalDue[0]?.count || 0);
+    const lt = Number(lastWeekTotalDue[0]?.count || 0);
+
+    const pctChange = (curr, prev) => {
+      if (prev === 0) return curr > 0 ? 100 : 0;
+      return Math.round(((curr - prev) / prev) * 100);
+    };
+
+    return {
+      tasksCompleted: { count: tc, change: pctChange(tc, lc) },
+      pendingTasks: { count: tp, change: pctChange(lp, tp) },
+      atRisk: { count: ta, change: pctChange(ta, la) },
+      completionRate: {
+        rate: tt > 0 ? Math.round((tc / tt) * 100) : 0,
+        change: lt > 0 ? Math.round(((tc / tt - lc / lt) / (lc / lt)) * 100) : (tc > 0 ? 100 : 0),
+      },
+    };
   }
 }
 

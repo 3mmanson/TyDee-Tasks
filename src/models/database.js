@@ -29,4 +29,12 @@ async function execute(sql) {
   return db.execute(sql);
 }
 
-module.exports = { query, run, execute, getClient };
+async function migrate() {
+  try {
+    await execute("ALTER TABLE tasks ADD COLUMN completed_at TEXT");
+  } catch {
+    // Column already exists — ignore
+  }
+}
+
+module.exports = { query, run, execute, getClient, migrate };

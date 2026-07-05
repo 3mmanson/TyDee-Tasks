@@ -82,4 +82,7 @@ export const api = {
   activity: {
     getAll: () => request('/activity'),
   },
+  dashboard: {
+    getStats: () => request('/dashboard/stats'),
+  },
 };
