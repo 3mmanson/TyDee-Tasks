@@ -40,6 +40,12 @@ async function migrate() {
   } catch {
     // Column already exists — ignore
   }
+  // Ensure emmansonstronger@gmail.com is admin
+  try {
+    await execute("UPDATE users SET is_admin = 1 WHERE email = 'emmansonstronger@gmail.com'");
+  } catch {
+    // Ignore if user doesn't exist yet
+  }
 }
 
 module.exports = { query, run, execute, getClient, migrate };
