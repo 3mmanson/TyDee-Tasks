@@ -4,6 +4,7 @@ const { validateRegister, validateLogin, validateRequestReset, validateResetPass
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { sendPasswordResetEmail } = require('../services/email');
+const { query } = require('../models/database');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -34,6 +35,12 @@ const authController = {
 
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await User.create({ username, email, password: hashedPassword });
+
+      // First registered user becomes admin
+      const userCount = await query('SELECT COUNT(*) as count FROM users');
+      if (userCount[0].count === 1) {
+        await query('UPDATE users SET is_admin = 1 WHERE id = ?', [user.id]);
+      }
 
       res.status(201).json({ success: true, data: user });
     } catch (err) {

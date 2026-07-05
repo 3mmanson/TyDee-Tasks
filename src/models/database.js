@@ -35,6 +35,11 @@ async function migrate() {
   } catch {
     // Column already exists — ignore
   }
+  try {
+    await execute("ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0");
+  } catch {
+    // Column already exists — ignore
+  }
 }
 
 module.exports = { query, run, execute, getClient, migrate };

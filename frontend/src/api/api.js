@@ -85,4 +85,7 @@ export const api = {
   dashboard: {
     getStats: () => request('/dashboard/stats'),
   },
+  admin: {
+    getUsers: () => request('/admin/users'),
+  },
 };

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotificationContext } from '../../context/NotificationContext';
 import { useTheme } from '../../context/ThemeContext';
-import { LogOut, Bell, AlertTriangle, Plus, X, Menu, Trash2, Sun, Moon } from 'lucide-react';
+import { LogOut, Bell, AlertTriangle, Plus, X, Menu, Trash2, Sun, Moon, Shield } from 'lucide-react';
 
 const Navbar = ({ onNewTask }) => {
   const { user, logout } = useAuth();
@@ -158,6 +158,18 @@ const Navbar = ({ onNewTask }) => {
           <span className="hidden sm:inline text-sm" style={{ color: 'var(--text-secondary)' }}>
             {user?.username}
           </span>
+
+          {/* Admin link */}
+          <a
+            href="/admin"
+            className="hidden sm:flex p-2 rounded-xl transition"
+            style={{ color: 'var(--text-secondary)' }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover)'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+            title="Admin dashboard"
+          >
+            <Shield className="w-5 h-5" />
+          </a>
 
           {/* Logout */}
           <button
