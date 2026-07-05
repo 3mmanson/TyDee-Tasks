@@ -1,8 +1,18 @@
 const { Resend } = require('resend');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getClient() {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return null;
+  return new Resend(key);
+}
 
 async function sendPasswordResetEmail(to, resetToken) {
+  const resend = getClient();
+  if (!resend) {
+    console.warn('RESEND_API_KEY not set — skipping email');
+    return;
+  }
+
   const baseUrl = process.env.APP_URL || 'http://localhost:3000';
   const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
 
