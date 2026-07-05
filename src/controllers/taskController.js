@@ -1,5 +1,5 @@
 const Task = require('../models/Task');
-const { validateTask } = require('../validators/taskValidator');
+const { validateTask, validateTaskUpdate } = require('../validators/taskValidator');
 
 const taskController = {
   async getAllTasks(req, res) {
@@ -55,7 +55,7 @@ const taskController = {
         return res.status(404).json({ success: false, error: 'Task not found' });
       }
 
-      const { error, value } = validateTask(req.body);
+      const { error, value } = validateTaskUpdate(req.body);
       if (error) {
         return res.status(400).json({
           success: false,

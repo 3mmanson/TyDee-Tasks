@@ -10,6 +10,8 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
     priority: 'Medium',
     due_date: ''
   });
+  const [dueDate, setDueDate] = useState('');
+  const [dueTime, setDueTime] = useState('');
 
   const normalizePriority = (priority) => {
     if (!priority) return 'Medium';
@@ -18,21 +20,20 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
 
   useEffect(() => {
     if (editingTask) {
+      const dt = editingTask.due_date ? new Date(editingTask.due_date) : null;
       setFormData({
         title: editingTask.title || '',
         description: editingTask.description || '',
         status: editingTask.status || 'pending',
         priority: normalizePriority(editingTask.priority),
-        due_date: editingTask.due_date ? new Date(editingTask.due_date).toISOString().split('T')[0] : ''
+        due_date: editingTask.due_date || ''
       });
+      setDueDate(dt ? dt.toISOString().split('T')[0] : '');
+      setDueTime(dt ? dt.toTimeString().slice(0, 5) : '');
     } else {
-      setFormData({
-        title: '',
-        description: '',
-        status: 'pending',
-        priority: 'Medium',
-        due_date: ''
-      });
+      setFormData({ title: '', description: '', status: 'pending', priority: 'Medium', due_date: '' });
+      setDueDate('');
+      setDueTime('');
     }
   }, [editingTask]);
 
@@ -40,11 +41,12 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const combined = dueDate && dueTime ? `${dueDate}T${dueTime}` : dueDate || null;
     try {
       if (editingTask) {
-        await api.tasks.update(editingTask.id, formData);
+        await api.tasks.update(editingTask.id, { ...formData, due_date: combined });
       } else {
-        await api.tasks.create(formData);
+        await api.tasks.create({ ...formData, due_date: combined });
       }
       onTaskCreated();
       onClose();
@@ -112,14 +114,25 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
               </select>
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Due Date & Time</label>
-            <input
-              type="datetime-local"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-              value={formData.due_date || ''}
-              onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+              <input
+                type="date"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Due Time</label>
+              <input
+                type="time"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                value={dueTime}
+                onChange={(e) => setDueTime(e.target.value)}
+              />
+            </div>
           </div>
           <div className="pt-4 flex gap-3">
             <button

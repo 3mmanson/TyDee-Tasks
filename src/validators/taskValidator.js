@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-const taskSchema = Joi.object({
+const baseSchema = {
   title: Joi.string().min(1).max(255).required().messages({
     'string.empty': 'Title cannot be empty',
     'string.max': 'Title must not exceed 255 characters',
@@ -15,17 +15,29 @@ const taskSchema = Joi.object({
   priority: Joi.string().valid('Low', 'Medium', 'High').default('Medium').messages({
     'any.only': 'Priority must be one of: Low, Medium, High'
   }),
+};
+
+const createSchema = Joi.object({
+  ...baseSchema,
   due_date: Joi.date().min('now').allow(null, '').messages({
     'date.base': 'Due date must be a valid date',
     'date.min': 'Due date cannot be in the past'
   })
 });
 
-const validateTask = (data) => {
-  return taskSchema.validate(data, { abortEarly: false });
-};
+const updateSchema = Joi.object({
+  ...baseSchema,
+  due_date: Joi.date().allow(null, '').messages({
+    'date.base': 'Due date must be a valid date'
+  })
+});
+
+const validateTask = (data) => createSchema.validate(data, { abortEarly: false });
+const validateTaskUpdate = (data) => updateSchema.validate(data, { abortEarly: false });
 
 module.exports = {
   validateTask,
-  taskSchema
+  validateTaskUpdate,
+  createSchema,
+  updateSchema
 };
