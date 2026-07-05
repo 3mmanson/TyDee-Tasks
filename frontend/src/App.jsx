@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -28,6 +29,7 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <NotificationProvider>
         <Router>
@@ -58,6 +60,7 @@ function App() {
         </Router>
       </NotificationProvider>
     </AuthProvider>
+    </ThemeProvider>
   );
 }
 
