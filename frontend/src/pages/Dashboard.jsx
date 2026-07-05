@@ -74,35 +74,35 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Tasks</h1>
-            <p className="text-gray-500">Manage your daily productivity</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Tasks</h1>
+            <p className="text-gray-500 text-sm sm:text-base">Manage your daily productivity</p>
           </div>
           <button
             onClick={() => { setEditingTask(null); setIsFormOpen(true); }}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-sm"
+            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-sm min-h-[44px]"
           >
             <Plus className="w-5 h-5" />
             Add Task
           </button>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
             <input
               type="text"
               placeholder="Search tasks..."
-              className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition"
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition min-h-[44px]"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="flex gap-2">
             <select
-              className="px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition text-sm"
+              className="px-3 py-2.5 bg-white border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition text-sm min-h-[44px]"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             >

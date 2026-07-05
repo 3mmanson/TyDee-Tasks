@@ -15,7 +15,7 @@ const TaskItem = ({ task, onDelete, onEdit, onToggleStatus }) => {
   };
 
   return (
-    <div className="group bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 flex items-start gap-4">
+    <div className="group bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row items-start gap-4">
       <button
         onClick={() => onToggleStatus(task)}
         className="mt-1 transition-transform hover:scale-110"
@@ -50,17 +50,17 @@ const TaskItem = ({ task, onDelete, onEdit, onToggleStatus }) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity ml-auto sm:ml-0">
         <button
           onClick={() => onEdit(task)}
-          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition min-w-[44px] min-h-[44px] flex items-center justify-center"
           title="Edit task"
         >
           <Edit2 className="w-4 h-4" />
         </button>
         <button
           onClick={() => onDelete(task.id)}
-          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition min-w-[44px] min-h-[44px] flex items-center justify-center"
           title="Delete task"
         >
           <Trash2 className="w-4 h-4" />
