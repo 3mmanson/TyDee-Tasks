@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { api } from '../../api/api';
-import { X, Plus } from 'lucide-react';
+import { X } from 'lucide-react';
 
 const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
   const [formData, setFormData] = useState({
@@ -55,34 +55,48 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
     }
   };
 
+  const inputStyle = {
+    backgroundColor: 'var(--bg-tertiary)',
+    borderColor: 'var(--stroke)',
+    color: 'var(--text-primary)',
+    borderRadius: 'var(--radius-sm)',
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
-        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-          <h3 className="text-lg font-semibold text-gray-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'var(--overlay)' }}>
+      <div
+        className="w-full max-w-md overflow-hidden shadow-2xl"
+        style={{ backgroundColor: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)' }}
+      >
+        <div
+          className="px-6 py-4 border-b flex justify-between items-center"
+          style={{ borderColor: 'var(--stroke)' }}
+        >
+          <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
             {editingTask ? 'Edit Task' : 'Create New Task'}
           </h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition">
+          <button onClick={onClose} style={{ color: 'var(--text-muted)' }} className="hover:opacity-70 transition">
             <X className="w-5 h-5" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Title *</label>
             <input
               type="text"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full px-3 py-2 border outline-none focus:ring-2 focus:ring-[var(--color-active)]"
+              style={inputStyle}
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="What needs to be done?"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Description</label>
             <textarea
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-              rows="3"
+              className="w-full px-3 py-2 border outline-none focus:ring-2 focus:ring-[var(--color-active)]"
+              style={{ ...inputStyle, minHeight: '80px' }}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Add more details..."
@@ -90,9 +104,10 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Status</label>
               <select
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-3 py-2 border outline-none focus:ring-2 focus:ring-[var(--color-active)]"
+                style={inputStyle}
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
               >
@@ -102,9 +117,10 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+              <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Priority</label>
               <select
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-3 py-2 border outline-none focus:ring-2 focus:ring-[var(--color-active)]"
+                style={inputStyle}
                 value={formData.priority}
                 onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
               >
@@ -116,19 +132,21 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+              <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Due Date</label>
               <input
                 type="date"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-3 py-2 border outline-none focus:ring-2 focus:ring-[var(--color-active)]"
+                style={inputStyle}
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Due Time</label>
+              <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Due Time</label>
               <input
                 type="time"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-3 py-2 border outline-none focus:ring-2 focus:ring-[var(--color-active)]"
+                style={inputStyle}
                 value={dueTime}
                 onChange={(e) => setDueTime(e.target.value)}
               />
@@ -138,13 +156,15 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+              className="flex-1 px-4 py-2 text-sm font-medium rounded-lg transition"
+              style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+              className="flex-1 px-4 py-2 text-sm font-medium text-white rounded-lg transition"
+              style={{ backgroundColor: 'var(--color-active)' }}
             >
               {editingTask ? 'Save Changes' : 'Create Task'}
             </button>

@@ -22,11 +22,14 @@ const TaskList = ({ tasks, onDelete, onEdit, onToggleStatus, onReorder }) => {
   if (tasks.length === 0) {
     return (
       <div className="text-center py-20">
-        <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div
+          className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+          style={{ backgroundColor: 'var(--bg-tertiary)' }}
+        >
           <span className="text-2xl">📝</span>
         </div>
-        <h3 className="text-lg font-medium text-gray-900">No tasks found</h3>
-        <p className="text-gray-500 max-w-xs mx-auto mt-2">
+        <h3 className="text-lg font-medium" style={{ color: 'var(--text-primary)' }}>No tasks found</h3>
+        <p className="max-w-xs mx-auto mt-2 text-sm" style={{ color: 'var(--text-muted)' }}>
           Get organized! Create your first task to start tracking your progress.
         </p>
       </div>
@@ -36,7 +39,7 @@ const TaskList = ({ tasks, onDelete, onEdit, onToggleStatus, onReorder }) => {
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {tasks.map(task => (
             <SortableTaskItem
               key={task.id}

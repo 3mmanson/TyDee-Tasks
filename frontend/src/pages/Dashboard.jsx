@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '../api/api';
 import Navbar from '../components/Layout/Navbar';
 import TaskList from '../components/Tasks/TaskList';
 import TaskForm from '../components/Tasks/TaskForm';
 import ActivityLog from '../components/ActivityLog';
 import { useNotifications } from '../hooks/useNotifications';
-import { Plus, Filter, Search, History } from 'lucide-react';
+import { Search, History } from 'lucide-react';
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
@@ -93,38 +93,39 @@ const Dashboard = () => {
     return matchesFilter && matchesSearch;
   });
 
+  const inputStyle = {
+    backgroundColor: 'var(--bg-secondary)',
+    borderColor: 'var(--stroke)',
+    color: 'var(--text-primary)',
+  };
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <Navbar onNewTask={() => { setEditingTask(null); setIsFormOpen(true); }} />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pt-20">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Tasks</h1>
-            <p className="text-gray-500 text-sm sm:text-base">Manage your daily productivity</p>
+            <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>My Tasks</h1>
+            <p className="text-sm sm:text-base" style={{ color: 'var(--text-muted)' }}>Manage your daily productivity</p>
           </div>
-          <button
-            onClick={() => { setEditingTask(null); setIsFormOpen(true); }}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-sm min-h-[44px]"
-          >
-            <Plus className="w-5 h-5" />
-            Add Task
-          </button>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-2.5 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
             <input
               type="text"
               placeholder="Search tasks..."
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition min-h-[44px]"
+              className="w-full pl-10 pr-4 py-2.5 border rounded-xl outline-none focus:ring-2 transition min-h-[44px]"
+              style={{ ...inputStyle, '--tw-ring-color': 'var(--color-active)' }}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="flex gap-2">
             <select
-              className="px-3 py-2.5 bg-white border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition text-sm min-h-[44px]"
+              className="px-3 py-2.5 border rounded-xl outline-none focus:ring-2 transition text-sm min-h-[44px]"
+              style={inputStyle}
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             >
@@ -138,8 +139,8 @@ const Dashboard = () => {
         </div>
 
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+          <div className="flex flex-col items-center justify-center py-20" style={{ color: 'var(--text-muted)' }}>
+            <div className="animate-spin rounded-full h-8 w-8 mb-4" style={{ borderBottomColor: 'var(--color-active)' }}></div>
             <p>Loading your tasks...</p>
           </div>
         ) : (
@@ -159,10 +160,11 @@ const Dashboard = () => {
           editingTask={editingTask}
         />
 
-        <div className="mt-8 border-t border-gray-200 pt-6">
+        <div className="mt-8 pt-6" style={{ borderTop: '1px solid var(--stroke)' }}>
           <button
             onClick={() => setShowActivity(!showActivity)}
-            className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-800 transition mb-4"
+            className="flex items-center gap-2 text-sm font-medium transition mb-4"
+            style={{ color: 'var(--text-secondary)' }}
           >
             <History className="w-4 h-4" />
             {showActivity ? 'Hide' : 'Show'} Activity History
