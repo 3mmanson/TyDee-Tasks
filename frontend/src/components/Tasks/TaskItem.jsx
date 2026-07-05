@@ -1,4 +1,5 @@
 import { Calendar, Trash2, Edit2, CheckCircle2, Circle, AlertTriangle } from 'lucide-react';
+import { formatDueDate } from '../../utils/dateUtils';
 
 const categoryColorMap = {
   Design: 'var(--color-negative)',
@@ -22,28 +23,6 @@ const statusColorMap = {
 };
 
 const TaskItem = ({ task, onDelete, onEdit, onToggleStatus }) => {
-  const formatDueDate = (dueDate) => {
-    if (!dueDate) return null;
-    try {
-      let d;
-      if (typeof dueDate === 'number' || (typeof dueDate === 'string' && /^\d+$/.test(dueDate.trim()))) {
-        const ts = Number(dueDate);
-        d = new Date(ts < 1e12 ? ts * 1000 : ts);
-      } else {
-        d = new Date(dueDate);
-      }
-      if (isNaN(d.getTime())) return null;
-      const month = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      const hours = d.getHours();
-      const minutes = String(d.getMinutes()).padStart(2, '0');
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      const h12 = hours % 12 || 12;
-      return `${month}, ${h12}:${minutes} ${ampm}`;
-    } catch {
-      return null;
-    }
-  };
-
   const isOverdue = task.status === 'overdue';
   const isCompleted = task.status === 'completed';
   const categoryColor = categoryColorMap[task.category] || 'var(--color-active)';

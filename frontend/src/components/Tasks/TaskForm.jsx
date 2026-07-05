@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../api/api';
+import { toLocalISOString } from '../../utils/dateUtils';
 import { X } from 'lucide-react';
 
 const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
@@ -41,7 +42,7 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const combined = dueDate && dueTime ? `${dueDate}T${dueTime}` : dueDate || null;
+    const combined = toLocalISOString(dueDate, dueTime);
     try {
       if (editingTask) {
         await api.tasks.update(editingTask.id, { ...formData, due_date: combined });
