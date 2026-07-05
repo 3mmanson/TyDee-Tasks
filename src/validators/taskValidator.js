@@ -9,14 +9,15 @@ const taskSchema = Joi.object({
   description: Joi.string().allow(null, '').messages({
     'string.base': 'Description must be a string'
   }),
-  status: Joi.string().valid('pending', 'in_progress', 'completed').default('pending').messages({
-    'any.only': 'Status must be one of: pending, in_progress, completed'
+  status: Joi.string().valid('pending', 'in_progress', 'completed', 'overdue').default('pending').messages({
+    'any.only': 'Status must be one of: pending, in_progress, completed, overdue'
   }),
   priority: Joi.string().valid('Low', 'Medium', 'High').default('Medium').messages({
     'any.only': 'Priority must be one of: Low, Medium, High'
   }),
-  due_date: Joi.date().allow(null, '').messages({
-    'date.base': 'Due date must be a valid date'
+  due_date: Joi.date().min('now').allow(null, '').messages({
+    'date.base': 'Due date must be a valid date',
+    'date.min': 'Due date cannot be in the past'
   })
 });
 

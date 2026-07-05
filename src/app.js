@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const taskRoutes = require('./routes/taskRoutes');
 const authRoutes = require('./routes/authRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -34,6 +35,7 @@ app.use(express.static(frontendDist));
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Client-side routing fallback
 app.get('/{*splat}', (req, res) => {

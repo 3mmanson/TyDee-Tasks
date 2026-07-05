@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Flag, Trash2, Edit2, CheckCircle2, Circle } from 'lucide-react';
+import { Calendar, Flag, Trash2, Edit2, CheckCircle2, Circle, AlertTriangle } from 'lucide-react';
 
 const TaskItem = ({ task, onDelete, onEdit, onToggleStatus }) => {
   const priorityColors = {
@@ -12,23 +12,35 @@ const TaskItem = ({ task, onDelete, onEdit, onToggleStatus }) => {
     pending: 'text-gray-600 bg-gray-100',
     in_progress: 'text-blue-600 bg-blue-50',
     completed: 'text-green-600 bg-green-50',
+    overdue: 'text-red-600 bg-red-50',
+  };
+
+  const formatDueDate = (dueDate) => {
+    if (!dueDate) return 'No due date';
+    const d = new Date(dueDate);
+    return d.toLocaleDateString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric',
+      hour: 'numeric', minute: '2-digit',
+    });
   };
 
   return (
-    <div className="group bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row items-start gap-4">
+    <div className={`group bg-white p-4 rounded-xl border shadow-sm hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row items-start gap-4 ${task.status === 'overdue' ? 'border-red-300 bg-red-50/30' : 'border-gray-200'}`}>
       <button
         onClick={() => onToggleStatus(task)}
         className="mt-1 transition-transform hover:scale-110"
       >
         {task.status === 'completed' ? (
           <CheckCircle2 className="w-6 h-6 text-green-500" />
+        ) : task.status === 'overdue' ? (
+          <AlertTriangle className="w-6 h-6 text-red-500" />
         ) : (
           <Circle className="w-6 h-6 text-gray-300 hover:text-gray-400" />
         )}
       </button>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
           <h3 className={`font-semibold text-gray-800 truncate ${task.status === 'completed' ? 'line-through text-gray-400' : ''}`}>
             {task.title}
           </h3>
@@ -42,7 +54,7 @@ const TaskItem = ({ task, onDelete, onEdit, onToggleStatus }) => {
         <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
           <div className="flex items-center gap-1">
             <Calendar className="w-3 h-3" />
-            <span>{task.due_date || 'No due date'}</span>
+            <span>{formatDueDate(task.due_date)}</span>
           </div>
           <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${statusColors[task.status]}`}>
             {task.status.replace('_', ' ')}

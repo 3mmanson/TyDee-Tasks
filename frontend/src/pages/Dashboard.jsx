@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../api/api';
 import Navbar from '../components/Layout/Navbar';
 import TaskList from '../components/Tasks/TaskList';
 import TaskForm from '../components/Tasks/TaskForm';
+import { useNotifications } from '../hooks/useNotifications';
 import { Plus, Filter, Search } from 'lucide-react';
 
 const Dashboard = () => {
@@ -28,6 +29,12 @@ const Dashboard = () => {
   useEffect(() => {
     fetchTasks();
   }, []);
+
+  const handleNotification = useCallback(() => {
+    fetchTasks();
+  }, []);
+
+  useNotifications(handleNotification);
 
   const handleCreateOrUpdate = async () => {
     await fetchTasks();
@@ -110,6 +117,7 @@ const Dashboard = () => {
               <option value="pending">Pending</option>
               <option value="in_progress">In Progress</option>
               <option value="completed">Completed</option>
+              <option value="overdue">Overdue</option>
             </select>
           </div>
         </div>
