@@ -24,12 +24,19 @@ const statusColorMap = {
 const TaskItem = ({ task, onDelete, onEdit, onToggleStatus }) => {
   const formatDueDate = (dueDate) => {
     if (!dueDate) return null;
-    const d = new Date(dueDate);
+    const str = String(dueDate);
+    const d = new Date(str);
     if (isNaN(d.getTime())) return null;
     const month = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const str = String(dueDate);
-    const time = str.includes('T') ? str.split('T')[1].slice(0, 5) : null;
-    return time ? `${month}, ${time}` : month;
+    // Extract time directly from string to avoid timezone conversion
+    const tIdx = str.indexOf('T');
+    if (tIdx === -1) return month;
+    const timePart = str.slice(tIdx + 1, tIdx + 6); // "HH:MM"
+    if (!timePart || timePart.length < 5) return month;
+    const [h, m] = timePart.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    return `${month}, ${h12}:${String(m).padStart(2, '0')} ${ampm}`;
   };
 
   const isOverdue = task.status === 'overdue';
