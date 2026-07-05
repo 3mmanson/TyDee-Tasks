@@ -18,7 +18,15 @@ const Dashboard = () => {
     setIsLoading(true);
     try {
       const response = await api.tasks.getAll();
-      setTasks(response.data);
+      const order = JSON.parse(localStorage.getItem('taskOrder') || '[]');
+      if (order.length > 0) {
+        const taskMap = new Map(response.data.map(t => [t.id, t]));
+        const ordered = order.map(id => taskMap.get(id)).filter(Boolean);
+        const remaining = response.data.filter(t => !order.includes(t.id));
+        setTasks([...ordered, ...remaining]);
+      } else {
+        setTasks(response.data);
+      }
     } catch (error) {
       alert('Failed to load tasks: ' + error.message);
     } finally {
@@ -29,6 +37,11 @@ const Dashboard = () => {
   useEffect(() => {
     fetchTasks();
   }, []);
+
+  const handleReorder = (newOrder) => {
+    setTasks(newOrder);
+    localStorage.setItem('taskOrder', JSON.stringify(newOrder.map(t => t.id)));
+  };
 
   const handleNotification = useCallback(() => {
     fetchTasks();
@@ -133,6 +146,7 @@ const Dashboard = () => {
             onDelete={handleDelete}
             onEdit={handleEdit}
             onToggleStatus={handleToggleStatus}
+            onReorder={handleReorder}
           />
         )}
 
