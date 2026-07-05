@@ -1,33 +1,41 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { api } from '../api/api';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek,
   eachDayOfInterval, format, isSameMonth, isToday, addMonths, subMonths,
 } from 'date-fns';
 
-const categoryColorMap = {
-  Design: 'var(--color-negative)',
-  Marketing: 'var(--color-active)',
-  Development: 'var(--color-positive)',
-  Research: 'var(--color-warning)',
-  Personal: 'var(--color-primary)',
+const priorityColorMap = {
+  High: { bg: 'var(--color-negative)', text: '#fff' },
+  Medium: { bg: 'var(--color-warning)', text: '#09090B' },
+  Low: { bg: 'var(--stroke)', text: 'var(--text-secondary)' },
 };
 
 const CalendarView = ({ onEditTask }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const monthKey = format(currentMonth, 'yyyy-MM');
+  const [openDay, setOpenDay] = useState(null);
+  const popoverRef = useRef(null);
 
   useEffect(() => {
     setLoading(true);
-    api.tasks.getAll(monthKey)
+    api.tasks.getAll()
       .then(res => setTasks(res.data || []))
       .catch(() => setTasks([]))
       .finally(() => setLoading(false));
-  }, [monthKey]);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target)) {
+        setOpenDay(null);
+      }
+    };
+    if (openDay) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openDay]);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -37,18 +45,32 @@ const CalendarView = ({ onEditTask }) => {
 
   const tasksByDate = {};
   tasks.forEach(task => {
-    if (!task.due_date) return;
-    const key = task.due_date.split('T')[0];
+    let key;
+    if (task.due_date) {
+      key = task.due_date.split('T')[0];
+    } else {
+      key = format(new Date(), 'yyyy-MM-dd');
+    }
     if (!tasksByDate[key]) tasksByDate[key] = [];
     tasksByDate[key].push(task);
   });
 
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+  const handleDayClick = (dateKey, dayTasks) => {
+    if (dayTasks.length === 1) {
+      onEditTask(dayTasks[0]);
+    } else if (dayTasks.length > 1) {
+      setOpenDay(openDay === dateKey ? null : dateKey);
+    }
+  };
+
+  const STACK_OFFSET = 5;
+
   return (
     <div
-      className="border p-4 sm:p-6"
-      style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--stroke)', borderRadius: 'var(--radius-lg)' }}
+      className="p-4 sm:p-6"
+      style={{ backgroundColor: 'var(--bg-primary)', borderRadius: 'var(--radius-lg)' }}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
@@ -94,17 +116,19 @@ const CalendarView = ({ onEditTask }) => {
             const dayTasks = tasksByDate[dateKey] || [];
             const inMonth = isSameMonth(day, currentMonth);
             const today = isToday(day);
+            const stackCount = Math.min(dayTasks.length, 3);
 
             return (
               <div
                 key={dateKey}
-                className="min-h-[80px] sm:min-h-[100px] p-1.5 border transition"
+                className="relative min-h-[90px] sm:min-h-[110px] p-1.5 border transition cursor-pointer group/day"
                 style={{
                   borderColor: 'var(--stroke)',
-                  backgroundColor: today ? 'var(--color-active)' + '10' : 'transparent',
+                  backgroundColor: today ? 'var(--color-active)' + '10' : 'var(--bg-secondary)',
                   opacity: inMonth ? 1 : 0.35,
                   borderRadius: '8px',
                 }}
+                onClick={() => handleDayClick(dateKey, dayTasks)}
               >
                 <div
                   className="text-xs font-medium mb-1 text-right pr-1"
@@ -112,31 +136,88 @@ const CalendarView = ({ onEditTask }) => {
                 >
                   {format(day, 'd')}
                 </div>
-                <div className="space-y-0.5">
-                  {dayTasks.slice(0, 3).map(task => {
-                    const color = categoryColorMap[task.category] || 'var(--color-active)';
+
+                {/* Task card stack */}
+                <div className="relative" style={{ minHeight: stackCount > 0 ? `${stackCount * 28 + 8}px` : '0' }}>
+                  {dayTasks.slice(0, 3).map((task, i) => {
+                    const pStyle = priorityColorMap[task.priority] || priorityColorMap.Medium;
+                    const isTop = i === 0;
+                    const totalVisible = Math.min(dayTasks.length, 3);
+
                     return (
-                      <button
+                      <div
                         key={task.id}
-                        onClick={() => onEditTask(task)}
-                        className="w-full text-left px-1.5 py-0.5 text-[10px] font-medium truncate border-l-2 transition hover:opacity-80"
+                        className="absolute left-0 right-0 px-1.5 py-1 text-[10px] font-medium truncate rounded transition-all duration-150"
                         style={{
-                          backgroundColor: 'var(--bg-tertiary)',
-                          color: 'var(--text-primary)',
-                          borderLeftColor: color,
-                          borderRadius: '4px',
+                          backgroundColor: pStyle.bg,
+                          color: pStyle.text,
+                          top: `${i * STACK_OFFSET}px`,
+                          left: `${i * 1}px`,
+                          right: `${i * -1}px`,
+                          zIndex: totalVisible - i,
+                          opacity: dayTasks.length > 1 ? 1 - (i * 0.1) : 1,
+                          boxShadow: isTop ? '0 2px 6px rgba(0,0,0,0.15)' : 'none',
+                          transformOrigin: 'center center',
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.transform = 'rotate(-2deg) translateY(-3px) scale(1.04)';
+                          e.currentTarget.style.zIndex = '20';
+                          e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.transform = 'none';
+                          e.currentTarget.style.zIndex = String(totalVisible - i);
+                          e.currentTarget.style.boxShadow = isTop ? '0 2px 6px rgba(0,0,0,0.15)' : 'none';
                         }}
                       >
                         {task.title}
-                      </button>
+                      </div>
                     );
                   })}
-                  {dayTasks.length > 3 && (
-                    <div className="text-[10px] text-center" style={{ color: 'var(--text-muted)' }}>
-                      +{dayTasks.length - 3} more
-                    </div>
-                  )}
                 </div>
+
+                {/* Day-detail popover for stacks */}
+                {openDay === dateKey && dayTasks.length > 1 && (
+                  <div
+                    ref={popoverRef}
+                    className="absolute top-full left-0 right-0 mt-1 rounded-xl shadow-xl overflow-hidden z-50 border"
+                    style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--stroke)' }}
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <div className="px-3 py-2 border-b flex justify-between items-center" style={{ borderColor: 'var(--stroke)' }}>
+                      <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
+                        {format(day, 'MMM d')} — {dayTasks.length} tasks
+                      </span>
+                      <button onClick={() => setOpenDay(null)} style={{ color: 'var(--text-muted)' }}>
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                    <div className="max-h-48 overflow-y-auto">
+                      {dayTasks.map(task => {
+                        const pStyle = priorityColorMap[task.priority] || priorityColorMap.Medium;
+                        return (
+                          <button
+                            key={task.id}
+                            className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 border-b transition"
+                            style={{ borderColor: 'var(--stroke)' }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover)'}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                            onClick={() => { onEditTask(task); setOpenDay(null); }}
+                          >
+                            <span
+                              className="w-2 h-2 rounded-full shrink-0"
+                              style={{ backgroundColor: pStyle.bg }}
+                            />
+                            <span className="truncate" style={{ color: 'var(--text-primary)' }}>{task.title}</span>
+                            <span className="ml-auto shrink-0 text-[10px] px-1.5 py-0.5 rounded font-bold" style={{ backgroundColor: pStyle.bg, color: pStyle.text }}>
+                              {task.priority}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
