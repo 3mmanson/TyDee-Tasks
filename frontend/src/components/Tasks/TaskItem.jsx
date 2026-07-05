@@ -24,19 +24,22 @@ const statusColorMap = {
 const TaskItem = ({ task, onDelete, onEdit, onToggleStatus }) => {
   const formatDueDate = (dueDate) => {
     if (!dueDate) return null;
-    const str = String(dueDate);
-    const d = new Date(str);
-    if (isNaN(d.getTime())) return null;
-    const month = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    // Extract time directly from string to avoid timezone conversion
-    const tIdx = str.indexOf('T');
-    if (tIdx === -1) return month;
-    const timePart = str.slice(tIdx + 1, tIdx + 6); // "HH:MM"
-    if (!timePart || timePart.length < 5) return month;
-    const [h, m] = timePart.split(':').map(Number);
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    const h12 = h % 12 || 12;
-    return `${month}, ${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+    try {
+      const str = String(dueDate);
+      const d = new Date(str);
+      if (isNaN(d.getTime())) return str.slice(0, 16).replace('T', ' ');
+      const month = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const tIdx = str.indexOf('T');
+      if (tIdx === -1) return month;
+      const timePart = str.slice(tIdx + 1, tIdx + 6);
+      if (!timePart || timePart.length < 5) return month;
+      const [h, m] = timePart.split(':').map(Number);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const h12 = h % 12 || 12;
+      return `${month}, ${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+    } catch {
+      return null;
+    }
   };
 
   const isOverdue = task.status === 'overdue';
