@@ -6,7 +6,7 @@ The project was built as an end-to-end exercise in product development and AI-as
 
 More than just a task manager, TyDee Tasks represents an exploration of how AI can accelerate software development while still requiring human judgment, problem-solving, and ownership.
 
-**Live Application:** https://tydee-tasks.onrender.com
+**Live Application:** [https://tydee-tasks.onrender.com](https://tydee-tasks.onrender.com)
 
 ---
 
@@ -187,6 +187,6 @@ TyDee Tasks is part of my ongoing journey exploring how AI and modern developmen
 
 ## Connect
 
-**GitHub:** https://github.com/3mmanson
+**GitHub:** [https://github.com/3mmanson](https://github.com/3mmanson)
 
-**LinkedIn:** https://linkedin.com/in/davidemmanson
+**LinkedIn:** [https://linkedin.com/in/davidemmanson](https://linkedin.com/in/davidemmanson)

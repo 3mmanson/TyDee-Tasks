@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
+import { useNotificationContext } from '../context/NotificationContext';
 
 export function useNotifications(onNotification) {
   const sentRef = useRef(new Set());
+  const { addNotification } = useNotificationContext();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -19,6 +21,8 @@ export function useNotifications(onNotification) {
       if (sentRef.current.has(key)) return;
       sentRef.current.add(key);
 
+      addNotification(data);
+
       if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('TyDee Tasks', {
           body: data.message,
@@ -31,11 +35,9 @@ export function useNotifications(onNotification) {
 
     es.onerror = () => {
       es.close();
-      setTimeout(() => {
-        // Reconnect handled by browser SSE auto-reconnect
-      }, 5000);
+      setTimeout(() => {}, 5000);
     };
 
     return () => es.close();
-  }, [onNotification]);
+  }, [onNotification, addNotification]);
 }
