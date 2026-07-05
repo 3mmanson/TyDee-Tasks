@@ -50,8 +50,8 @@ const CalendarView = ({ onEditTask }) => {
 
   return (
     <div
-      className="border p-4 sm:p-6"
-      style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--stroke)', borderRadius: 'var(--radius-lg)' }}
+      className="p-4 sm:p-6"
+      style={{ backgroundColor: 'var(--bg-primary)', borderRadius: 'var(--radius-lg)' }}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
@@ -105,7 +105,7 @@ const CalendarView = ({ onEditTask }) => {
                 className="relative min-h-[80px] sm:min-h-[100px] p-1.5 border transition group/day"
                 style={{
                   borderColor: 'var(--stroke)',
-                  backgroundColor: today ? 'var(--color-active)' + '10' : 'transparent',
+                  backgroundColor: today ? 'var(--color-active)' + '10' : 'var(--bg-secondary)',
                   opacity: inMonth ? 1 : 0.35,
                   borderRadius: '8px',
                 }}
