@@ -36,7 +36,7 @@ const authController = {
 
       res.status(201).json({ success: true, data: user });
     } catch (err) {
-      res.status(500).json({ success: false, error: 'Server error: ' + (err instanceof Error ? err.message : String(err)) });
+      res.status(500).json({ success: false, error: 'Server error' });
     }
   },
 
@@ -73,7 +73,7 @@ const authController = {
         data: userWithoutPassword
       });
     } catch (err) {
-      res.status(500).json({ success: false, error: 'Server error: ' + (err instanceof Error ? err.message : String(err)) });
+      res.status(500).json({ success: false, error: 'Server error' });
     }
   },
 
@@ -90,7 +90,7 @@ const authController = {
       const { password, ...userWithoutPassword } = user;
       res.json({ success: true, data: userWithoutPassword });
     } catch (err) {
-      res.status(500).json({ success: false, error: 'Server error: ' + (err instanceof Error ? err.message : String(err)) });
+      res.status(500).json({ success: false, error: 'Server error' });
     }
   },
 
@@ -115,14 +115,20 @@ const authController = {
 
       const resetToken = await PasswordResetToken.create(user.id);
 
-      res.json({
+      const response = {
         success: true,
-        message: 'Password reset token generated',
-        reset_token: resetToken.token,
-        expires_at: resetToken.expires_at
-      });
+        message: 'If the email exists, a reset link has been sent'
+      };
+
+      // Only expose token in development — production should use email delivery
+      if (process.env.NODE_ENV !== 'production') {
+        response.reset_token = resetToken.rawToken;
+        response.expires_at = resetToken.expires_at;
+      }
+
+      res.json(response);
     } catch (error) {
-      res.status(500).json({ success: false, error: 'Server error: ' + error.message });
+      res.status(500).json({ success: false, error: 'Server error' });
     }
   },
 
@@ -155,7 +161,7 @@ const authController = {
 
       res.json({ success: true, message: 'Password reset successful' });
     } catch (err) {
-      res.status(500).json({ success: false, error: 'Server error: ' + (err instanceof Error ? err.message : String(err)) });
+      res.status(500).json({ success: false, error: 'Server error' });
     }
   }
 };

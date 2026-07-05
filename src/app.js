@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const path = require('path');
 const fs = require('fs');
 const taskRoutes = require('./routes/taskRoutes');
@@ -8,8 +9,19 @@ const authRoutes = require('./routes/authRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
+// Security headers
+app.use(helmet());
+
+// CORS — restrict to allowed origins in production
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : [];
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' && allowedOrigins.length > 0
+    ? allowedOrigins
+    : true,
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

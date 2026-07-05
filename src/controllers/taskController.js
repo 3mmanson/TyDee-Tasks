@@ -1,8 +1,6 @@
 const Task = require('../models/Task');
 const { validateTask } = require('../validators/taskValidator');
 
-const errMsg = (e) => (e instanceof Error ? e.message : String(e));
-
 const taskController = {
   async getAllTasks(req, res) {
     try {
@@ -10,7 +8,7 @@ const taskController = {
       const tasks = await Task.getAll(userId);
       res.json({ success: true, count: tasks.length, data: tasks });
     } catch (err) {
-      res.status(500).json({ success: false, error: 'Server error: ' + errMsg(err) });
+      res.status(500).json({ success: false, error: 'Server error' });
     }
   },
 
@@ -24,7 +22,7 @@ const taskController = {
       }
       res.json({ success: true, data: task });
     } catch (err) {
-      res.status(500).json({ success: false, error: 'Server error: ' + errMsg(err) });
+      res.status(500).json({ success: false, error: 'Server error' });
     }
   },
 
@@ -43,7 +41,7 @@ const taskController = {
       const task = await Task.create({ ...value, userId });
       res.status(201).json({ success: true, data: task });
     } catch (err) {
-      res.status(500).json({ success: false, error: 'Server error: ' + errMsg(err) });
+      res.status(500).json({ success: false, error: 'Server error' });
     }
   },
 
@@ -69,7 +67,7 @@ const taskController = {
       const task = await Task.update(id, userId, value);
       res.json({ success: true, data: task });
     } catch (err) {
-      res.status(500).json({ success: false, error: 'Server error: ' + errMsg(err) });
+      res.status(500).json({ success: false, error: 'Server error' });
     }
   },
 
@@ -86,7 +84,7 @@ const taskController = {
       await Task.delete(id, userId);
       res.json({ success: true, message: 'Task deleted successfully' });
     } catch (err) {
-      res.status(500).json({ success: false, error: 'Server error: ' + errMsg(err) });
+      res.status(500).json({ success: false, error: 'Server error' });
     }
   }
 };
