@@ -159,17 +159,19 @@ const Navbar = ({ onNewTask }) => {
             {user?.username}
           </span>
 
-          {/* Admin link */}
-          <a
-            href="/admin"
-            className="hidden sm:flex p-2 rounded-xl transition"
-            style={{ color: 'var(--text-secondary)' }}
-            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover)'}
-            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
-            title="Admin dashboard"
-          >
-            <Shield className="w-5 h-5" />
-          </a>
+          {/* Admin link — admin only */}
+          {user?.is_admin ? (
+            <a
+              href="/admin"
+              className="hidden sm:flex p-2 rounded-xl transition"
+              style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover)'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+              title="Admin dashboard"
+            >
+              <Shield className="w-5 h-5" />
+            </a>
+          ) : null}
 
           {/* Logout */}
           <button
