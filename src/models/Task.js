@@ -47,6 +47,14 @@ class Task {
     return tasks.map(t => this._checkOverdue(t));
   }
 
+  static async getPendingForAllUsers() {
+    return query(
+      `SELECT t.*, u.email, u.username FROM tasks t
+       JOIN users u ON t.user_id = u.id
+       WHERE t.status = 'pending'`
+    );
+  }
+
   static async markOverdue(id) {
     await run(
       "UPDATE tasks SET status = 'overdue', updated_at = ? WHERE id = ? AND status != 'completed'",

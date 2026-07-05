@@ -3,6 +3,9 @@ const Task = require('../models/Task');
 // Connected clients: Map<userId, Set<response>>
 const clients = new Map();
 
+// Track last reminder time per task: Map<taskId, timestamp>
+const lastPendingReminder = new Map();
+
 const THRESHOLDS = [
   { label: 'overdue', ms: 0 },
   { label: '5 minutes', ms: 5 * 60 * 1000 },
@@ -33,6 +36,15 @@ function getNotificationKey(taskId, label) {
 }
 
 async function checkTasks() {
+  try {
+    await checkUpcomingTasks();
+    await checkPendingTasks();
+  } catch (err) {
+    console.error('Notification check failed:', err.message);
+  }
+}
+
+async function checkUpcomingTasks() {
   try {
     const tasks = await Task.getUpcomingForAllUsers();
     const now = Date.now();
@@ -74,6 +86,28 @@ async function checkTasks() {
     }
   } catch (err) {
     console.error('Notification check failed:', err.message);
+  }
+}
+
+async function checkPendingTasks() {
+  try {
+    const tasks = await Task.getPendingForAllUsers();
+    const now = Date.now();
+
+    for (const task of tasks) {
+      const lastSent = lastPendingReminder.get(task.id) || 0;
+      if (now - lastSent < 60 * 60 * 1000) continue;
+
+      lastPendingReminder.set(task.id, now);
+      sendToUser(task.user_id, 'notification', {
+        type: 'pending_reminder',
+        taskId: task.id,
+        title: task.title,
+        message: `Reminder: "${task.title}" is still pending. Time to start!`,
+      });
+    }
+  } catch (err) {
+    console.error('Pending check failed:', err.message);
   }
 }
 
