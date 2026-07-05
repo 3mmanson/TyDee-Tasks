@@ -6,7 +6,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 // All task routes are now protected
 router.use(authMiddleware);
 
-// GET all tasks
+// GET all tasks (supports ?view=calendar&month=YYYY-MM)
 router.get('/', (req, res) => taskController.getAllTasks(req, res));
 
 // GET task by ID

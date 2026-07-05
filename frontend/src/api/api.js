@@ -56,7 +56,7 @@ export const api = {
       }),
   },
   tasks: {
-    getAll: () => request('/tasks'),
+    getAll: (month) => request(month ? `/tasks?month=${month}` : '/tasks'),
     getById: (id) => request(`/tasks/${id}`),
     create: (taskData) =>
       request('/tasks', {

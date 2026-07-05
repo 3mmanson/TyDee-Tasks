@@ -5,8 +5,9 @@ import TaskList from '../components/Tasks/TaskList';
 import TaskForm from '../components/Tasks/TaskForm';
 import ActivityLog from '../components/ActivityLog';
 import KpiDashboard from '../components/KpiDashboard';
+import CalendarView from '../components/CalendarView';
 import { useNotifications } from '../hooks/useNotifications';
-import { Search, History } from 'lucide-react';
+import { Search, History, List, CalendarDays } from 'lucide-react';
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
@@ -16,6 +17,7 @@ const Dashboard = () => {
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [showActivity, setShowActivity] = useState(false);
+  const [view, setView] = useState('list');
 
   const fetchTasks = async () => {
     setIsLoading(true);
@@ -100,6 +102,11 @@ const Dashboard = () => {
     color: 'var(--text-primary)',
   };
 
+  const viewBtnStyle = (active) => ({
+    backgroundColor: active ? 'var(--color-active)' : 'transparent',
+    color: active ? '#fff' : 'var(--text-secondary)',
+  });
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <Navbar onNewTask={() => { setEditingTask(null); setIsFormOpen(true); }} />
@@ -125,7 +132,7 @@ const Dashboard = () => {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <select
               className="px-3 py-2.5 border rounded-xl outline-none focus:ring-2 transition text-sm min-h-[44px]"
               style={inputStyle}
@@ -138,22 +145,46 @@ const Dashboard = () => {
               <option value="completed">Completed</option>
               <option value="overdue">Overdue</option>
             </select>
+
+            {/* View toggle */}
+            <div className="flex rounded-xl border overflow-hidden" style={{ borderColor: 'var(--stroke)' }}>
+              <button
+                onClick={() => setView('list')}
+                className="p-2.5 transition"
+                style={viewBtnStyle(view === 'list')}
+                title="List view"
+              >
+                <List className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setView('calendar')}
+                className="p-2.5 transition"
+                style={viewBtnStyle(view === 'calendar')}
+                title="Calendar view"
+              >
+                <CalendarDays className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
 
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20" style={{ color: 'var(--text-muted)' }}>
-            <div className="animate-spin rounded-full h-8 w-8 mb-4" style={{ borderBottomColor: 'var(--color-active)' }}></div>
-            <p>Loading your tasks...</p>
-          </div>
+        {view === 'list' ? (
+          isLoading ? (
+            <div className="flex flex-col items-center justify-center py-20" style={{ color: 'var(--text-muted)' }}>
+              <div className="animate-spin rounded-full h-8 w-8 mb-4" style={{ borderBottomColor: 'var(--color-active)' }}></div>
+              <p>Loading your tasks...</p>
+            </div>
+          ) : (
+            <TaskList
+              tasks={filteredTasks}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+              onToggleStatus={handleToggleStatus}
+              onReorder={handleReorder}
+            />
+          )
         ) : (
-          <TaskList
-            tasks={filteredTasks}
-            onDelete={handleDelete}
-            onEdit={handleEdit}
-            onToggleStatus={handleToggleStatus}
-            onReorder={handleReorder}
-          />
+          <CalendarView onEditTask={handleEdit} />
         )}
 
         <TaskForm

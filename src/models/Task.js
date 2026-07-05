@@ -1,7 +1,15 @@
 const { query, run } = require('./database');
 
 class Task {
-  static async getAll(userId) {
+  static async getAll(userId, month) {
+    if (month) {
+      const start = `${month}-01`;
+      const tasks = await query(
+        "SELECT * FROM tasks WHERE user_id = ? AND due_date IS NOT NULL AND due_date >= ? AND due_date < date(?, '+1 month') ORDER BY due_date ASC",
+        [userId, start, start]
+      );
+      return tasks.map(t => this._checkOverdue(t));
+    }
     const tasks = await query('SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC', [userId]);
     return tasks.map(t => this._checkOverdue(t));
   }

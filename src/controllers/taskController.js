@@ -6,7 +6,8 @@ const taskController = {
   async getAllTasks(req, res) {
     try {
       const userId = req.user.userId;
-      const tasks = await Task.getAll(userId);
+      const month = req.query.month || null;
+      const tasks = await Task.getAll(userId, month);
       res.json({ success: true, count: tasks.length, data: tasks });
     } catch (err) {
       res.status(500).json({ success: false, error: 'Server error' });
