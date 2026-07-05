@@ -1,9 +1,7 @@
 const Task = require('../models/Task');
+const Notification = require('../models/Notification');
 
-// Connected clients: Map<userId, Set<response>>
 const clients = new Map();
-
-// Track last reminder time per task: Map<taskId, timestamp>
 const lastPendingReminder = new Map();
 
 const THRESHOLDS = [
@@ -31,17 +29,12 @@ function sendToUser(userId, event, data) {
   }
 }
 
-function getNotificationKey(taskId, label) {
-  return `${taskId}:${label}`;
-}
+async function notify(userId, taskId, type, message) {
+  const exists = await Notification.exists(userId, taskId, type);
+  if (exists) return;
 
-async function checkTasks() {
-  try {
-    await checkUpcomingTasks();
-    await checkPendingTasks();
-  } catch (err) {
-    console.error('Notification check failed:', err.message);
-  }
+  const saved = await Notification.create({ userId, taskId, type, message });
+  sendToUser(userId, 'notification', saved);
 }
 
 async function checkUpcomingTasks() {
@@ -61,31 +54,19 @@ async function checkUpcomingTasks() {
         if (threshold.label === 'overdue') {
           if (diff <= 0 && task.status !== 'overdue') {
             await Task.markOverdue(task.id);
-            sendToUser(task.user_id, 'notification', {
-              type: 'overdue',
-              taskId: task.id,
-              title: task.title,
-              message: `"${task.title}" is now overdue!`,
-              due_date: task.due_date,
-            });
+            await notify(task.user_id, task.id, 'overdue', `"${task.title}" is now overdue!`);
           }
         } else {
           if (diff > 0 && diff <= threshold.ms) {
             const mins = Math.round(diff / 60000);
             const timeLabel = mins < 60 ? `${mins} minute${mins !== 1 ? 's' : ''}` : `${Math.round(mins / 60)} hour${Math.round(mins / 60) !== 1 ? 's' : ''}`;
-            sendToUser(task.user_id, 'notification', {
-              type: threshold.label,
-              taskId: task.id,
-              title: task.title,
-              message: `"${task.title}" is due in ${timeLabel}`,
-              due_date: task.due_date,
-            });
+            await notify(task.user_id, task.id, threshold.label, `"${task.title}" is due in ${timeLabel}`);
           }
         }
       }
     }
   } catch (err) {
-    console.error('Notification check failed:', err.message);
+    console.error('Upcoming check failed:', err.message);
   }
 }
 
@@ -99,16 +80,16 @@ async function checkPendingTasks() {
       if (now - lastSent < 60 * 60 * 1000) continue;
 
       lastPendingReminder.set(task.id, now);
-      sendToUser(task.user_id, 'notification', {
-        type: 'pending_reminder',
-        taskId: task.id,
-        title: task.title,
-        message: `Reminder: "${task.title}" is still pending. Time to start!`,
-      });
+      await notify(task.user_id, task.id, 'pending_reminder', `Reminder: "${task.title}" is still pending. Time to start!`);
     }
   } catch (err) {
     console.error('Pending check failed:', err.message);
   }
+}
+
+async function checkTasks() {
+  await checkUpcomingTasks();
+  await checkPendingTasks();
 }
 
 let checkInterval = null;

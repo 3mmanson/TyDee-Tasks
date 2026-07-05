@@ -49,6 +49,16 @@ async function setupDatabase() {
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`);
 
+  await execute(`CREATE TABLE IF NOT EXISTS notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    task_id INTEGER,
+    type VARCHAR(50) NOT NULL,
+    message TEXT NOT NULL,
+    read INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`);
+
   console.log('Database schema ready.');
 }
 

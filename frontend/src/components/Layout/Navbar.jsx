@@ -27,9 +27,9 @@ const Navbar = () => {
     }
   };
 
-  const formatTime = (id) => {
-    const diff = Date.now() - id;
-    if (diff < 60000) return 'just now';
+  const formatTime = (createdAt) => {
+    const diff = Date.now() - new Date(createdAt).getTime();
+    if (diff < 0 || diff < 60000) return 'just now';
     if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
     if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
     return `${Math.floor(diff / 86400000)}d ago`;
@@ -84,7 +84,7 @@ const Navbar = () => {
                           {getIcon(n.type)}
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-800">{n.message}</p>
-                            <p className="text-xs text-gray-400 mt-1">{formatTime(n.id)}</p>
+                            <p className="text-xs text-gray-400 mt-1">{formatTime(n.created_at)}</p>
                           </div>
                           {!n.read && <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 shrink-0" />}
                         </div>
