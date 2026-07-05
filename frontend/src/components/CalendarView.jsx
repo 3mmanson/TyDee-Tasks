@@ -45,12 +45,10 @@ const CalendarView = ({ onEditTask }) => {
 
   const tasksByDate = {};
   tasks.forEach(task => {
-    let key;
-    if (task.due_date) {
-      key = task.due_date.split('T')[0];
-    } else {
-      key = format(new Date(), 'yyyy-MM-dd');
-    }
+    if (!task.due_date) return;
+    const d = new Date(task.due_date);
+    if (isNaN(d.getTime())) return;
+    const key = format(d, 'yyyy-MM-dd');
     if (!tasksByDate[key]) tasksByDate[key] = [];
     tasksByDate[key].push(task);
   });

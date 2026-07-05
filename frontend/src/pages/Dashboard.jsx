@@ -6,6 +6,7 @@ import TaskForm from '../components/Tasks/TaskForm';
 import ActivityLog from '../components/ActivityLog';
 import KpiDashboard from '../components/KpiDashboard';
 import CalendarView from '../components/CalendarView';
+import ErrorBoundary from '../components/UI/ErrorBoundary';
 import { useNotifications } from '../hooks/useNotifications';
 import { Search, History, List, CalendarDays } from 'lucide-react';
 
@@ -184,7 +185,9 @@ const Dashboard = () => {
             />
           )
         ) : (
-          <CalendarView onEditTask={handleEdit} />
+          <ErrorBoundary>
+            <CalendarView onEditTask={handleEdit} />
+          </ErrorBoundary>
         )}
 
         <TaskForm
