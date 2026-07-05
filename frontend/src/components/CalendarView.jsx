@@ -19,13 +19,15 @@ const CalendarView = ({ onEditTask }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const monthKey = format(currentMonth, 'yyyy-MM');
+
   useEffect(() => {
     setLoading(true);
-    api.tasks.getAll()
+    api.tasks.getAll(monthKey)
       .then(res => setTasks(res.data || []))
       .catch(() => setTasks([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [monthKey]);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -35,12 +37,7 @@ const CalendarView = ({ onEditTask }) => {
 
   const tasksByDate = {};
   tasks.forEach(task => {
-    if (!task.due_date) {
-      const key = format(new Date(), 'yyyy-MM-dd');
-      if (!tasksByDate[key]) tasksByDate[key] = [];
-      tasksByDate[key].push(task);
-      return;
-    }
+    if (!task.due_date) return;
     const key = task.due_date.split('T')[0];
     if (!tasksByDate[key]) tasksByDate[key] = [];
     tasksByDate[key].push(task);
@@ -50,8 +47,8 @@ const CalendarView = ({ onEditTask }) => {
 
   return (
     <div
-      className="p-4 sm:p-6"
-      style={{ backgroundColor: 'var(--bg-primary)', borderRadius: 'var(--radius-lg)' }}
+      className="border p-4 sm:p-6"
+      style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--stroke)', borderRadius: 'var(--radius-lg)' }}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
@@ -97,15 +94,14 @@ const CalendarView = ({ onEditTask }) => {
             const dayTasks = tasksByDate[dateKey] || [];
             const inMonth = isSameMonth(day, currentMonth);
             const today = isToday(day);
-            const hasStack = dayTasks.length > 1;
 
             return (
               <div
                 key={dateKey}
-                className="relative min-h-[80px] sm:min-h-[100px] p-1.5 border transition group/day"
+                className="min-h-[80px] sm:min-h-[100px] p-1.5 border transition"
                 style={{
                   borderColor: 'var(--stroke)',
-                  backgroundColor: today ? 'var(--color-active)' + '10' : 'var(--bg-secondary)',
+                  backgroundColor: today ? 'var(--color-active)' + '10' : 'transparent',
                   opacity: inMonth ? 1 : 0.35,
                   borderRadius: '8px',
                 }}
@@ -116,37 +112,19 @@ const CalendarView = ({ onEditTask }) => {
                 >
                   {format(day, 'd')}
                 </div>
-                <div className="space-y-0.5 relative">
-                  {dayTasks.slice(0, 3).map((task, i) => {
+                <div className="space-y-0.5">
+                  {dayTasks.slice(0, 3).map(task => {
                     const color = categoryColorMap[task.category] || 'var(--color-active)';
                     return (
                       <button
                         key={task.id}
                         onClick={() => onEditTask(task)}
-                        className="w-full text-left px-1.5 py-0.5 text-[10px] font-medium truncate border-l-2 transition-all duration-150"
+                        className="w-full text-left px-1.5 py-0.5 text-[10px] font-medium truncate border-l-2 transition hover:opacity-80"
                         style={{
                           backgroundColor: 'var(--bg-tertiary)',
                           color: 'var(--text-primary)',
                           borderLeftColor: color,
                           borderRadius: '4px',
-                          ...(hasStack ? {
-                            transform: `translateY(${i * 1}px)`,
-                            zIndex: dayTasks.length - i,
-                          } : {}),
-                        }}
-                        onMouseEnter={e => {
-                          if (hasStack) {
-                            e.currentTarget.style.transform = 'translateY(-2px) scale(1.03)';
-                            e.currentTarget.style.zIndex = '10';
-                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                          }
-                        }}
-                        onMouseLeave={e => {
-                          if (hasStack) {
-                            e.currentTarget.style.transform = `translateY(${i * 1}px)`;
-                            e.currentTarget.style.zIndex = String(dayTasks.length - i);
-                            e.currentTarget.style.boxShadow = 'none';
-                          }
                         }}
                       >
                         {task.title}
