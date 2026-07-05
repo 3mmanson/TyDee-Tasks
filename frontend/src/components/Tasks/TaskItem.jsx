@@ -27,7 +27,8 @@ const TaskItem = ({ task, onDelete, onEdit, onToggleStatus }) => {
     const d = new Date(dueDate);
     if (isNaN(d.getTime())) return null;
     const month = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const time = dueDate.includes('T') ? dueDate.split('T')[1].slice(0, 5) : null;
+    const str = String(dueDate);
+    const time = str.includes('T') ? str.split('T')[1].slice(0, 5) : null;
     return time ? `${month}, ${time}` : month;
   };
 
