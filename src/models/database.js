@@ -46,6 +46,11 @@ async function migrate() {
     // Column already exists — ignore
   }
   try {
+    await execute("ALTER TABLE tasks ADD COLUMN category VARCHAR(50) DEFAULT 'Personal'");
+  } catch {
+    // Column already exists — ignore
+  }
+  try {
     await execute(`CREATE TABLE IF NOT EXISTS kpi_daily_snapshots (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
