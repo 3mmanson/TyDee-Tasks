@@ -45,11 +45,12 @@ const Navbar = ({ onNewTask }) => {
 
   return (
     <nav
-      className="sticky top-0 z-30 border-b px-4 sm:px-6"
+      className="sticky top-0 z-30 border-b px-4 sm:px-6 shadow-sm"
       style={{
         backgroundColor: 'var(--bg-secondary)',
         borderColor: 'var(--stroke)',
         height: 'var(--nav-height)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
       }}
     >
       <div className="flex justify-between items-center max-w-6xl mx-auto">
