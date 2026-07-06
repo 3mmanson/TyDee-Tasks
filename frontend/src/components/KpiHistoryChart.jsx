@@ -81,7 +81,7 @@ const KpiHistoryChart = () => {
           No history data yet — snapshots are recorded daily as you use the app.
         </div>
       ) : (
-        <div className="h-48">
+        <div className="h-48 chart-interactive">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: -16 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--stroke)" />

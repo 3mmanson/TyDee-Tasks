@@ -95,3 +95,7 @@
 .btn-new-task:active {
   transform: scale(0.97);
 }
+
+.chart-interactive .recharts-bar-rectangle path {
+  cursor: pointer;
+}
