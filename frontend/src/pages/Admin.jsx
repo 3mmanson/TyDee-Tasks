@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/api';
-import { Users, Shield, ArrowLeft } from 'lucide-react';
+import { Users, Shield, ArrowLeft, Trash2, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,6 +9,10 @@ const Admin = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showClearModal, setShowClearModal] = useState(false);
+  const [clearSnapshots, setClearSnapshots] = useState(true);
+  const [clearActivity, setClearActivity] = useState(true);
+  const [clearing, setClearing] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -79,6 +83,98 @@ const Admin = () => {
           </div>
           <div className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{data.totalUsers}</div>
         </div>
+
+        {/* Clear All Tasks */}
+        <div
+          className="p-6 mb-6 glow-always card-light"
+          style={{ backgroundColor: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)' }}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Trash2 className="w-5 h-5" style={{ color: 'var(--color-negative)' }} />
+              <div>
+                <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Clear All Tasks</span>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Remove all your tasks and optionally reset KPI history</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowClearModal(true)}
+              className="px-4 py-2 text-sm font-medium rounded-xl transition"
+              style={{ backgroundColor: 'var(--color-negative)', color: '#fff' }}
+            >
+              Clear All
+            </button>
+          </div>
+        </div>
+
+        {showClearModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => !clearing && setShowClearModal(false)}>
+            <div className="absolute inset-0" style={{ backgroundColor: 'var(--overlay)' }} />
+            <div
+              className="relative w-full max-w-sm overflow-hidden shadow-2xl glow-always card-light"
+              style={{ backgroundColor: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)' }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="px-6 py-4 border-b flex justify-between items-center" style={{ borderColor: 'var(--stroke)' }}>
+                <span className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Clear All Tasks</span>
+                <button onClick={() => !clearing && setShowClearModal(false)} style={{ color: 'var(--text-muted)' }} className="hover:opacity-70 transition">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  This will soft-delete all your tasks. This cannot be undone.
+                </p>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={clearSnapshots}
+                    onChange={e => setClearSnapshots(e.target.checked)}
+                    className="w-4 h-4 rounded"
+                  />
+                  <span className="text-sm" style={{ color: 'var(--text-primary)' }}>Also clear KPI history</span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={clearActivity}
+                    onChange={e => setClearActivity(e.target.checked)}
+                    className="w-4 h-4 rounded"
+                  />
+                  <span className="text-sm" style={{ color: 'var(--text-primary)' }}>Also clear activity log</span>
+                </label>
+                <div className="flex gap-3 pt-2">
+                  <button
+                    onClick={() => !clearing && setShowClearModal(false)}
+                    className="flex-1 px-4 py-2 text-sm font-medium rounded-xl transition"
+                    style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}
+                    disabled={clearing}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={async () => {
+                      setClearing(true);
+                      try {
+                        await api.tasks.clearAll({ snapshots: clearSnapshots, activity: clearActivity });
+                        setShowClearModal(false);
+                        window.location.reload();
+                      } catch (err) {
+                        alert('Failed to clear tasks: ' + (err.message || 'Unknown error'));
+                        setClearing(false);
+                      }
+                    }}
+                    className="flex-1 px-4 py-2 text-sm font-medium text-white rounded-xl transition"
+                    style={{ backgroundColor: 'var(--color-negative)' }}
+                    disabled={clearing}
+                  >
+                    {clearing ? 'Clearing...' : 'Confirm'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Users table */}
         <div

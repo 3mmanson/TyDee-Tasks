@@ -45,6 +45,15 @@ class Task {
     return run('UPDATE tasks SET deleted_at = ?, updated_at = ? WHERE id = ? AND user_id = ?', [now, now, id, userId]);
   }
 
+  static async clearAll(userId) {
+    const now = new Date().toISOString();
+    return run('UPDATE tasks SET deleted_at = ?, updated_at = ? WHERE user_id = ? AND deleted_at IS NULL', [now, now, userId]);
+  }
+
+  static async clearSnapshots(userId) {
+    return run('DELETE FROM kpi_daily_snapshots WHERE user_id = ?', [userId]);
+  }
+
   static async purgeOldDeleted(days = 30) {
     const cutoff = new Date(Date.now() - days * 86400000).toISOString();
     return run("DELETE FROM tasks WHERE deleted_at IS NOT NULL AND deleted_at < ?", [cutoff]);

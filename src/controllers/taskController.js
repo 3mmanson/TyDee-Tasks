@@ -97,6 +97,23 @@ const taskController = {
     } catch (err) {
       res.status(500).json({ success: false, error: 'Server error' });
     }
+  },
+
+  async clearAllTasks(req, res) {
+    try {
+      const userId = req.user.userId;
+      const snapshots = req.query.snapshots === 'true';
+      const activity = req.query.activity === 'true';
+
+      await Task.clearAll(userId);
+
+      if (snapshots) await Task.clearSnapshots(userId);
+      if (activity) await ActivityLog.clearAll(userId);
+
+      res.json({ success: true, message: 'All tasks cleared' });
+    } catch (err) {
+      res.status(500).json({ success: false, error: 'Server error' });
+    }
   }
 };
 

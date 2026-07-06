@@ -72,6 +72,13 @@ export const api = {
       request(`/tasks/${id}`, {
         method: 'DELETE',
       }),
+    clearAll: (opts = {}) => {
+      const params = new URLSearchParams();
+      if (opts.snapshots) params.set('snapshots', 'true');
+      if (opts.activity) params.set('activity', 'true');
+      const qs = params.toString();
+      return request(`/tasks/all${qs ? '?' + qs : ''}`, { method: 'DELETE' });
+    },
   },
   notifications: {
     getAll: () => request('/notifications'),

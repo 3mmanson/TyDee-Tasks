@@ -15,6 +15,10 @@ class ActivityLog {
       [userId, limit]
     );
   }
+
+  static async clearAll(userId) {
+    return run('DELETE FROM activity_log WHERE user_id = ?', [userId]);
+  }
 }
 
 module.exports = ActivityLog;

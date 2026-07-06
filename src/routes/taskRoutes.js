@@ -18,6 +18,9 @@ router.post('/', (req, res) => taskController.createTask(req, res));
 // PUT update task
 router.put('/:id', (req, res) => taskController.updateTask(req, res));
 
+// DELETE all tasks (with optional ?snapshots=true&activity=true)
+router.delete('/all', (req, res) => taskController.clearAllTasks(req, res));
+
 // DELETE task
 router.delete('/:id', (req, res) => taskController.deleteTask(req, res));
 
