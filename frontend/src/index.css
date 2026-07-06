@@ -96,6 +96,12 @@
   transform: scale(0.97);
 }
 
-.chart-interactive .recharts-bar-rectangle path {
-  cursor: pointer;
+.chart-interactive svg {
+  cursor: default;
+}
+.chart-interactive .recharts-bar-rectangle path,
+.chart-interactive .recharts-bar-rectangle rect,
+.chart-interactive .recharts-bar rect,
+.chart-interactive rect[fill] {
+  cursor: pointer !important;
 }
