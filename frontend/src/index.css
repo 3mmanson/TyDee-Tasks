@@ -63,6 +63,9 @@
     color: var(--text-primary);
     transition: background-color 0.2s, color 0.2s;
   }
+  button, a, [role="button"], select, input[type="submit"] {
+    cursor: pointer;
+  }
 }
 
 /* Dark mode: green ambient glow for important surfaces */

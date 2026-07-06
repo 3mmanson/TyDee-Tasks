@@ -14,6 +14,7 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
   });
   const [dueDate, setDueDate] = useState('');
   const [dueTime, setDueTime] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const normalizePriority = (priority) => {
     if (!priority) return 'Medium';
@@ -44,6 +45,8 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     const combined = toLocalISOString(dueDate, dueTime);
     try {
       if (editingTask) {
@@ -58,6 +61,8 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
         ? error.details.join(', ')
         : error.details || error.message || 'An error occurred';
       alert(msg);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -177,15 +182,21 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
               onClick={onClose}
               className="flex-1 px-4 py-2 text-sm font-medium rounded-lg transition"
               style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}
+              disabled={submitting}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 text-sm font-medium text-white rounded-lg transition"
-              style={{ backgroundColor: 'var(--color-active)' }}
+              className="flex-1 px-4 py-2 text-sm font-medium text-white rounded-lg transition flex items-center justify-center gap-2"
+              style={{
+                backgroundColor: submitting ? 'var(--text-muted)' : 'var(--color-active)',
+                cursor: submitting ? 'not-allowed' : 'pointer',
+              }}
+              disabled={submitting}
             >
-              {editingTask ? 'Save Changes' : 'Create Task'}
+              {submitting && <span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />}
+              {submitting ? 'Saving...' : editingTask ? 'Save Changes' : 'Create Task'}
             </button>
           </div>
         </form>
