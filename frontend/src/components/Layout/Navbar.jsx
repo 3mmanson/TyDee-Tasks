@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotificationContext } from '../../context/NotificationContext';
 import { useTheme } from '../../context/ThemeContext';
-import { LogOut, Bell, AlertTriangle, Plus, X, Menu, Trash2, Sun, Moon, Shield, Volume2, VolumeX } from 'lucide-react';
+import { LogOut, Bell, AlertTriangle, Plus, X, Menu, Trash2, Sun, Moon, Shield, Volume2, VolumeX, User } from 'lucide-react';
 
 const Navbar = ({ onNewTask }) => {
   const { user, logout } = useAuth();
@@ -224,7 +224,7 @@ const Navbar = ({ onNewTask }) => {
             style={{ backgroundColor: 'var(--bg-secondary)' }}
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex justify-end mb-8">
+            <div className="flex justify-end">
               <button
                 onClick={() => setMenuOpen(false)}
                 className="p-2 rounded-xl transition"
@@ -233,19 +233,29 @@ const Navbar = ({ onNewTask }) => {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <span className="text-sm font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>
-              {user?.username}
-            </span>
-            <button
-              onClick={() => { logout(); setMenuOpen(false); }}
-              className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition min-h-[44px]"
-              style={{ color: 'var(--text-secondary)' }}
-              onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover)'}
-              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Logout</span>
-            </button>
+            <div className="mt-auto flex flex-col gap-2">
+              <div className="flex items-center gap-3 px-3 py-2.5">
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: 'var(--color-hover)' }}
+                >
+                  <User className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
+                </div>
+                <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  {user?.username}
+                </span>
+              </div>
+              <button
+                onClick={() => { logout(); setMenuOpen(false); }}
+                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition min-h-[44px]"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-negative)'; e.currentTarget.style.backgroundColor = 'var(--color-hover)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.backgroundColor = 'transparent'; }}
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
