@@ -45,7 +45,7 @@ const Navbar = ({ onNewTask }) => {
 
   return (
     <nav
-      className="sticky top-0 z-30 border-b px-4 sm:px-6 shadow-sm"
+      className="sticky top-3 z-30 border-b px-4 sm:px-6 shadow-sm"
       style={{
         backgroundColor: 'var(--bg-secondary)',
         borderColor: 'var(--stroke)',
