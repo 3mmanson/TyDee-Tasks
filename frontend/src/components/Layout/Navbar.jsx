@@ -52,7 +52,7 @@ const Navbar = ({ onNewTask }) => {
         boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
       }}
     >
-      <div className="flex justify-between items-center max-w-6xl mx-auto">
+      <div className="flex justify-between items-center w-full max-w-6xl mx-auto">
         {/* Logo */}
         <a href="/dashboard" className="flex items-center gap-2 shrink-0">
           <div
