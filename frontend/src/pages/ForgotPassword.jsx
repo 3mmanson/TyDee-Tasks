@@ -66,8 +66,7 @@ const ForgotPassword = () => {
             <Mail className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
             <input
               type="email"
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
-              style={{ color: '#111827' }}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-gray-900"
               placeholder="Email address"
               required
               value={email}

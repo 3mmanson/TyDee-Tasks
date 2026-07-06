@@ -66,8 +66,7 @@ const ResetPassword = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Reset Token</label>
               <input
                 type="text"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition font-mono text-sm"
-                style={{ color: '#111827' }}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition font-mono text-sm text-gray-900"
                 placeholder="Paste your reset token"
                 required
                 value={token}
@@ -78,8 +77,7 @@ const ResetPassword = () => {
               <Lock className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
               <input
                 type="password"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
-                style={{ color: '#111827' }}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-gray-900"
                 placeholder="New password"
                 required
                 minLength={6}
@@ -91,8 +89,7 @@ const ResetPassword = () => {
               <Lock className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
               <input
                 type="password"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
-                style={{ color: '#111827' }}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition text-gray-900"
                 placeholder="Confirm new password"
                 required
                 minLength={6}
