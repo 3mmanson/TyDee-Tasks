@@ -42,7 +42,7 @@
   --color-negative: #E53935;
   --color-active: #5691FF;
 
-  --bg-primary: #FAFAF9;
+  --bg-primary: #F3F4F6;
   --bg-secondary: #F5F5F5;
   --bg-tertiary: #EDEDEF;
   --bg-inverted: #09090B;
@@ -76,10 +76,10 @@
   box-shadow: 0 4px 16px rgba(34, 197, 94, 0.08);
 }
 
-/* Light mode: cards use shadow only, no border */
+/* Light mode: cards use layered shadow, page bg provides separation */
 [data-theme="light"] .card-light {
   border: none !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 /* Unlayered — beats any Tailwind @layer, guaranteed */

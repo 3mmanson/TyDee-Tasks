@@ -2,14 +2,21 @@ import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotificationContext } from '../../context/NotificationContext';
 import { useTheme } from '../../context/ThemeContext';
-import { LogOut, Bell, AlertTriangle, Plus, X, Menu, Trash2, Sun, Moon, Shield } from 'lucide-react';
+import { LogOut, Bell, AlertTriangle, Plus, X, Menu, Trash2, Sun, Moon, Shield, Volume2, VolumeX } from 'lucide-react';
 
 const Navbar = ({ onNewTask }) => {
   const { user, logout } = useAuth();
   const { notifications, unreadCount, isOpen, setIsOpen, markAsRead, markAllRead, clearAll } = useNotificationContext();
   const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [muted, setMuted] = useState(() => localStorage.getItem('notif_muted') === 'true');
   const dropdownRef = useRef(null);
+
+  const toggleMute = () => {
+    const next = !muted;
+    setMuted(next);
+    localStorage.setItem('notif_muted', next);
+  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -38,10 +45,11 @@ const Navbar = ({ onNewTask }) => {
 
   return (
     <nav
-      className="sticky top-0 z-30 border-b px-4 sm:px-6 py-3"
+      className="sticky top-0 z-30 border-b px-4 sm:px-6"
       style={{
         backgroundColor: 'var(--bg-secondary)',
         borderColor: 'var(--stroke)',
+        height: 'var(--nav-height)',
       }}
     >
       <div className="flex justify-between items-center max-w-6xl mx-auto">
@@ -113,7 +121,15 @@ const Navbar = ({ onNewTask }) => {
               >
                 <div className="px-4 py-3 border-b flex justify-between items-center" style={{ borderColor: 'var(--stroke)' }}>
                   <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>Notifications</span>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={toggleMute}
+                      className="text-xs hover:opacity-70 transition"
+                      style={{ color: 'var(--text-muted)' }}
+                      title={muted ? 'Unmute sounds' : 'Mute sounds'}
+                    >
+                      {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                    </button>
                     {unreadCount > 0 && (
                       <button onClick={markAllRead} className="text-xs hover:underline" style={{ color: 'var(--color-active)' }}>Mark all read</button>
                     )}
