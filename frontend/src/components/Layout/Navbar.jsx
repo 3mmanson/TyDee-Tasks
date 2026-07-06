@@ -9,6 +9,8 @@ const Navbar = ({ onNewTask }) => {
   const { notifications, unreadCount, isOpen, setIsOpen, markAsRead, markAllRead, clearAll } = useNotificationContext();
   const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [btnHovered, setBtnHovered] = useState(false);
+  const [btnActive, setBtnActive] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -75,12 +77,19 @@ const Navbar = ({ onNewTask }) => {
           {/* + New Task button — green */}
           <button
             onClick={onNewTask}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition min-h-[40px]"
-            style={
-              theme === 'dark'
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold min-h-[40px]"
+            style={{
+              cursor: 'pointer',
+              transition: 'transform 150ms ease',
+              transform: btnActive ? 'scale(0.97)' : btnHovered ? 'scale(1.05)' : 'scale(1)',
+              ...(theme === 'dark'
                 ? { background: 'linear-gradient(to right, #16A34A, #4ADE80)', color: '#fff' }
-                : { backgroundColor: '#16A34A', color: '#fff' }
-            }
+                : { backgroundColor: '#16A34A', color: '#fff' }),
+            }}
+            onMouseEnter={() => setBtnHovered(true)}
+            onMouseLeave={() => { setBtnHovered(false); setBtnActive(false); }}
+            onMouseDown={() => setBtnActive(true)}
+            onMouseUp={() => setBtnActive(false)}
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">New Task</span>

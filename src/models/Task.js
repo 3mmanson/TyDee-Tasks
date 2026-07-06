@@ -144,13 +144,19 @@ class Task {
       return Math.round(((curr - prev) / prev) * 100);
     };
 
+    const thisRate = tt > 0 ? tc / tt : 0;
+    const lastRate = lt > 0 ? lc / lt : 0;
+    const completionChange = lastRate === 0
+      ? (thisRate > 0 ? 100 : 0)
+      : Math.round(((thisRate - lastRate) / lastRate) * 100);
+
     return {
       tasksCompleted: { count: tc, change: pctChange(tc, lc) },
-      pendingTasks: { count: tp, change: pctChange(lp, tp) },
+      pendingTasks: { count: tp, change: pctChange(tp, lp) },
       atRisk: { count: ta, change: pctChange(ta, la) },
       completionRate: {
-        rate: tt > 0 ? Math.round((tc / tt) * 100) : 0,
-        change: lt > 0 ? Math.round(((tc / tt - lc / lt) / (lc / lt)) * 100) : (tc > 0 ? 100 : 0),
+        rate: Math.round(thisRate * 100),
+        change: completionChange,
       },
     };
   }

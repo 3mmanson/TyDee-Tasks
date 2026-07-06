@@ -67,6 +67,7 @@ const ResetPassword = () => {
               <input
                 type="text"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition font-mono text-sm"
+                style={{ color: '#111827' }}
                 placeholder="Paste your reset token"
                 required
                 value={token}
@@ -78,6 +79,7 @@ const ResetPassword = () => {
               <input
                 type="password"
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+                style={{ color: '#111827' }}
                 placeholder="New password"
                 required
                 minLength={6}
@@ -90,6 +92,7 @@ const ResetPassword = () => {
               <input
                 type="password"
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+                style={{ color: '#111827' }}
                 placeholder="Confirm new password"
                 required
                 minLength={6}

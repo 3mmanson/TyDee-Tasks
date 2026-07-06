@@ -2,19 +2,25 @@ import { useState, useEffect } from 'react';
 import { api } from '../api/api';
 import { Users, Shield, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Admin = () => {
+  const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (user && !user.is_admin) {
+      navigate('/dashboard', { replace: true });
+      return;
+    }
     api.admin.getUsers()
       .then(res => setData(res.data))
       .catch(err => setError(err.message || 'Access denied'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [user, navigate]);
 
   if (loading) {
     return (

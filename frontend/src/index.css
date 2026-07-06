@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  /* Border radius scale */
+  /* Border radius & layout */
   --radius-sm: 12px;
   --radius-lg: 16px;
+  --nav-height: 60px;
 
   /* Dark mode tokens (default) */
   --color-primary: #22C55E;
@@ -30,14 +31,14 @@
 }
 
 [data-theme="light"] {
-  --color-primary: #00C853;
+  --color-primary: #22C55E;
   --color-secondary: rgba(0, 0, 0, 0.04);
   --color-hover: rgba(0, 0, 0, 0.08);
 
-  --color-positive: #00A843;
+  --color-positive: #76FF76;
   --color-positive-inv: #16A34A;
-  --color-warning: #F5A300;
-  --color-warning-inv: #C67C00;
+  --color-warning: #FFC64C;
+  --color-warning-inv: #F5A300;
   --color-negative: #E53935;
   --color-active: #5691FF;
 
@@ -53,11 +54,13 @@
   --text-muted: rgba(0, 0, 0, 0.35);
 }
 
-body {
-  margin: 0;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  transition: background-color 0.2s, color 0.2s;
+@layer base {
+  body {
+    margin: 0;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.2s, color 0.2s;
+  }
 }
 
 /* Dark mode: green ambient glow for important surfaces */
