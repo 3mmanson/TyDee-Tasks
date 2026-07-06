@@ -216,10 +216,10 @@ const Navbar = ({ onNewTask }) => {
       {/* Mobile menu */}
       {menuOpen && (
         <div
-          className="sm:hidden border-t mt-3 pt-3 flex flex-col gap-2"
-          style={{ borderColor: 'var(--stroke)' }}
+          className="sm:hidden border-t mt-3 pt-3 px-4 pb-3 flex flex-col gap-2 rounded-b-xl"
+          style={{ borderColor: 'var(--stroke)', backgroundColor: 'var(--bg-secondary)', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
         >
-          <div className="flex items-center justify-between px-1">
+          <div className="flex items-center justify-between">
             <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{user?.username}</span>
             <button
               onClick={toggleTheme}
