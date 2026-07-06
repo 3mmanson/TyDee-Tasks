@@ -213,30 +213,40 @@ const Navbar = ({ onNewTask }) => {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu overlay — full screen */}
       {menuOpen && (
-        <div
-          className="sm:hidden border-t mt-3 pt-3 px-4 pb-3 flex flex-col gap-2 rounded-b-xl"
-          style={{ borderColor: 'var(--stroke)', backgroundColor: 'var(--bg-secondary)', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{user?.username}</span>
+        <div className="sm:hidden fixed inset-0 z-50 flex" onClick={() => setMenuOpen(false)}>
+          {/* Semi-transparent backdrop */}
+          <div className="flex-1" style={{ backgroundColor: 'var(--overlay)' }} />
+          {/* Menu panel — right side */}
+          <div
+            className="w-64 max-w-[75vw] min-h-screen flex flex-col p-6"
+            style={{ backgroundColor: 'var(--bg-secondary)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex justify-end mb-8">
+              <button
+                onClick={() => setMenuOpen(false)}
+                className="p-2 rounded-xl transition"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <span className="text-sm font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>
+              {user?.username}
+            </span>
             <button
-              onClick={toggleTheme}
-              className="p-2 rounded-xl"
+              onClick={() => { logout(); setMenuOpen(false); }}
+              className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition min-h-[44px]"
               style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover)'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
             >
-              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              <LogOut className="w-4 h-4" />
+              <span>Logout</span>
             </button>
           </div>
-          <button
-            onClick={logout}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-xl transition min-h-[44px]"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Logout</span>
-          </button>
         </div>
       )}
     </nav>
