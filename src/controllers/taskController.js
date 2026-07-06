@@ -44,7 +44,8 @@ const taskController = {
       await ActivityLog.create({ userId, taskId: task.id, action: 'task_created', details: `Created "${task.title}"` });
       res.status(201).json({ success: true, data: task });
     } catch (err) {
-      res.status(500).json({ success: false, error: 'Server error' });
+      console.error('createTask error:', err);
+      res.status(500).json({ success: false, error: 'Server error', details: err.message });
     }
   },
 

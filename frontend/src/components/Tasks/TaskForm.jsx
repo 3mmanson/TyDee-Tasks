@@ -54,7 +54,7 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
       onTaskCreated();
       onClose();
     } catch (error) {
-      alert(error.message || 'An error occurred');
+      alert(error.details?.join(', ') || error.message || 'An error occurred');
     }
   };
 
