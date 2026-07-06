@@ -5,17 +5,17 @@ class Task {
     if (month) {
       const start = `${month}-01`;
       const tasks = await query(
-        "SELECT * FROM tasks WHERE user_id = ? AND due_date IS NOT NULL AND due_date >= ? AND due_date < date(?, '+1 month') ORDER BY due_date ASC",
+        "SELECT * FROM tasks WHERE user_id = ? AND deleted_at IS NULL AND due_date IS NOT NULL AND due_date >= ? AND due_date < date(?, '+1 month') ORDER BY due_date ASC",
         [userId, start, start]
       );
       return tasks.map(t => this._checkOverdue(t));
     }
-    const tasks = await query('SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC', [userId]);
+    const tasks = await query('SELECT * FROM tasks WHERE user_id = ? AND deleted_at IS NULL ORDER BY created_at DESC', [userId]);
     return tasks.map(t => this._checkOverdue(t));
   }
 
   static async getById(id, userId) {
-    const rows = await query('SELECT * FROM tasks WHERE id = ? AND user_id = ?', [id, userId]);
+    const rows = await query('SELECT * FROM tasks WHERE id = ? AND user_id = ? AND deleted_at IS NULL', [id, userId]);
     return rows[0] ? this._checkOverdue(rows[0]) : null;
   }
 
@@ -41,7 +41,75 @@ class Task {
   }
 
   static async delete(id, userId) {
-    return run('DELETE FROM tasks WHERE id = ? AND user_id = ?', [id, userId]);
+    const now = new Date().toISOString();
+    return run('UPDATE tasks SET deleted_at = ?, updated_at = ? WHERE id = ? AND user_id = ?', [now, now, id, userId]);
+  }
+
+  static async purgeOldDeleted(days = 30) {
+    const cutoff = new Date(Date.now() - days * 86400000).toISOString();
+    return run("DELETE FROM tasks WHERE deleted_at IS NOT NULL AND deleted_at < ?", [cutoff]);
+  }
+
+  static async computeSnapshot(userId, dateStr) {
+    const dayStart = `${dateStr}T00:00:00.000Z`;
+    const dayEnd = new Date(new Date(dayStart).getTime() + 86400000).toISOString();
+
+    const completed = await query(
+      'SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND deleted_at IS NULL AND completed_at >= ? AND completed_at < ?',
+      [userId, dayStart, dayEnd]
+    );
+    const pending = await query(
+      "SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND deleted_at IS NULL AND status NOT IN ('completed') AND (due_date IS NULL OR due_date >= ?) AND created_at < ?",
+      [userId, dayEnd, dayEnd]
+    );
+    const atRisk = await query(
+      "SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND deleted_at IS NULL AND status != 'completed' AND due_date IS NOT NULL AND due_date < ?",
+      [userId, dayEnd]
+    );
+    const totalDue = await query(
+      'SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND deleted_at IS NULL AND due_date >= ? AND due_date < ?',
+      [userId, dayStart, dayEnd]
+    );
+    const completedOnTime = await query(
+      "SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND deleted_at IS NULL AND due_date >= ? AND due_date < ? AND status = 'completed'",
+      [userId, dayStart, dayEnd]
+    );
+
+    const completedCount = Number(completed[0]?.count || 0);
+    const pendingCount = Number(pending[0]?.count || 0);
+    const atRiskCount = Number(atRisk[0]?.count || 0);
+    const dueCount = Number(totalDue[0]?.count || 0);
+    const onTimeCount = Number(completedOnTime[0]?.count || 0);
+    const rate = dueCount > 0 ? Math.round((onTimeCount / dueCount) * 100) : 0;
+
+    return {
+      tasks_completed: completedCount,
+      pending_tasks: pendingCount,
+      at_risk: atRiskCount,
+      completion_rate: rate,
+    };
+  }
+
+  static async ensureSnapshot(userId, dateStr) {
+    const existing = await query(
+      'SELECT id FROM kpi_daily_snapshots WHERE user_id = ? AND snapshot_date = ?',
+      [userId, dateStr]
+    );
+    if (existing.length > 0) return;
+
+    const data = await this.computeSnapshot(userId, dateStr);
+    await run(
+      'INSERT INTO kpi_daily_snapshots (user_id, snapshot_date, tasks_completed, pending_tasks, at_risk, completion_rate) VALUES (?, ?, ?, ?, ?, ?)',
+      [userId, dateStr, data.tasks_completed, data.pending_tasks, data.at_risk, data.completion_rate]
+    );
+  }
+
+  static async getHistory(userId, days = 30) {
+    const cutoff = new Date(Date.now() - days * 86400000).toISOString().split('T')[0];
+    return query(
+      'SELECT * FROM kpi_daily_snapshots WHERE user_id = ? AND snapshot_date >= ? ORDER BY snapshot_date ASC',
+      [userId, cutoff]
+    );
   }
 
   static async getUpcomingForAllUsers() {

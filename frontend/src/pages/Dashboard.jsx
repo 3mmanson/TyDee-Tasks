@@ -5,6 +5,7 @@ import TaskList from '../components/Tasks/TaskList';
 import TaskForm from '../components/Tasks/TaskForm';
 import ActivityLog from '../components/ActivityLog';
 import KpiDashboard from '../components/KpiDashboard';
+import KpiHistoryChart from '../components/KpiHistoryChart';
 import CalendarView from '../components/CalendarView';
 import ErrorBoundary from '../components/UI/ErrorBoundary';
 import { useNotifications } from '../hooks/useNotifications';
@@ -120,6 +121,10 @@ const Dashboard = () => {
         </div>
 
         <KpiDashboard />
+
+        <div className="mb-6">
+          <KpiHistoryChart />
+        </div>
 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
           <div className="relative flex-1">

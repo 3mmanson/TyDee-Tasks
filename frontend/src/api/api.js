@@ -84,6 +84,7 @@ export const api = {
   },
   dashboard: {
     getStats: () => request('/dashboard/stats'),
+    getHistory: (days = 30) => request(`/dashboard/history?days=${days}`),
   },
   admin: {
     getUsers: () => request('/admin/users'),
