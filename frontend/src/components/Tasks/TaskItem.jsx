@@ -2,11 +2,9 @@ import { Calendar, Trash2, Edit2, CheckCircle2, Circle, AlertTriangle } from 'lu
 import { formatDueDate } from '../../utils/dateUtils';
 
 const categoryColorMap = {
-  Design: 'var(--color-negative)',
-  Marketing: 'var(--color-active)',
-  Development: 'var(--color-positive)',
-  Research: 'var(--color-warning)',
-  Personal: 'var(--color-primary)',
+  'DVK Print Shop': '#3B82F6',
+  'TyDee Tasks': '#22C55E',
+  Personal: '#F59E0B',
 };
 
 const priorityColorMap = {
@@ -74,6 +72,11 @@ const TaskItem = ({ task, onDelete, onEdit, onToggleStatus }) => {
             {task.category || 'General'}
           </span>
         </div>
+        {task.description && (
+          <p className="text-xs truncate mb-1" style={{ color: 'var(--text-muted)' }}>
+            {task.description.substring(0, 60)}{task.description.length > 60 ? '...' : ''}
+          </p>
+        )}
         <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-muted)' }}>
           {/* Status pill */}
           <span

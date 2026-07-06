@@ -98,7 +98,7 @@ const KpiDashboard = () => {
             <div className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
               {kpi.showRate ? `${value}%` : value}
             </div>
-            <div className="text-xs" style={{ color: positive ? 'var(--color-positive)' : 'var(--color-negative)' }}>
+            <div className="text-xs" style={{ color: positive ? 'var(--color-positive)' : 'var(--color-negative-inv)' }}>
               {change > 0 ? '+' : ''}{change}% vs last week
             </div>
           </div>

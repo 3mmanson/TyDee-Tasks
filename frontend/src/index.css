@@ -16,6 +16,7 @@
   --color-warning: #FFC64C;
   --color-warning-inv: #F5A300;
   --color-negative: #FF7676;
+  --color-negative-inv: #DC2626;
   --color-active: #5691FF;
 
   --bg-primary: #09090B;
@@ -40,6 +41,7 @@
   --color-warning: #FFC64C;
   --color-warning-inv: #F5A300;
   --color-negative: #E53935;
+  --color-negative-inv: #DC2626;
   --color-active: #5691FF;
 
   --bg-primary: #F3F4F6;
