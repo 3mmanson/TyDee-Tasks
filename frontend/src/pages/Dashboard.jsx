@@ -213,6 +213,7 @@ const Dashboard = () => {
             <div
               className="relative w-full max-w-3xl overflow-hidden shadow-2xl glow-always card-light"
               style={{ backgroundColor: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)' }}
+              onClick={e => e.stopPropagation()}
             >
               <div
                 className="px-6 py-4 border-b flex justify-between items-center"

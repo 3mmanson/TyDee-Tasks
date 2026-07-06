@@ -108,7 +108,7 @@ const KpiHistoryChart = () => {
                 labelFormatter={(label) => `Date: ${label}`}
                 formatter={(value) => [value, activeMetric?.label || '']}
               />
-              <Bar dataKey="value" fill={activeMetric?.color || 'var(--color-active)'} radius={[3, 3, 0, 0]} />
+              <Bar dataKey="value" fill={activeMetric?.color || 'var(--color-active)'} radius={[3, 3, 0, 0]} cursor="pointer" />
             </BarChart>
           </ResponsiveContainer>
         </div>
