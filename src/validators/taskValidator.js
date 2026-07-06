@@ -15,6 +15,9 @@ const baseSchema = {
   priority: Joi.string().valid('Low', 'Medium', 'High').default('Medium').messages({
     'any.only': 'Priority must be one of: Low, Medium, High'
   }),
+  category: Joi.string().valid('DVK Print Shop', 'TyDee Tasks', 'Personal').default('Personal').messages({
+    'any.only': 'Category must be one of: DVK Print Shop, TyDee Tasks, Personal'
+  }),
 };
 
 const createSchema = Joi.object({

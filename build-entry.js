@@ -26,6 +26,7 @@ async function setupDatabase() {
     status VARCHAR(20) DEFAULT 'pending',
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     priority VARCHAR(10) DEFAULT 'Medium',
+    category VARCHAR(50) DEFAULT 'Personal',
     due_date DATETIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

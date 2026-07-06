@@ -19,23 +19,23 @@ class Task {
     return rows[0] ? this._checkOverdue(rows[0]) : null;
   }
 
-  static async create({ title, description, status, userId, priority, due_date }) {
+  static async create({ title, description, status, userId, priority, category, due_date }) {
     const now = new Date().toISOString();
     const dueDateStr = due_date || null;
     const result = await run(
-      'INSERT INTO tasks (title, description, status, user_id, priority, due_date, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [title, description || null, status || 'pending', userId, priority || 'Medium', dueDateStr, now, now]
+      'INSERT INTO tasks (title, description, status, user_id, priority, category, due_date, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [title, description || null, status || 'pending', userId, priority || 'Medium', category || 'Personal', dueDateStr, now, now]
     );
     return this.getById(result.lastInsertRowid, userId);
   }
 
-  static async update(id, userId, { title, description, status, priority, due_date }) {
+  static async update(id, userId, { title, description, status, priority, category, due_date }) {
     const now = new Date().toISOString();
     const dueDateStr = due_date || null;
     const completedAt = status === 'completed' ? now : null;
     await run(
-      'UPDATE tasks SET title = ?, description = ?, status = ?, priority = ?, due_date = ?, completed_at = ?, updated_at = ? WHERE id = ? AND user_id = ?',
-      [title, description, status, priority, dueDateStr, completedAt, now, id, userId]
+      'UPDATE tasks SET title = ?, description = ?, status = ?, priority = ?, category = ?, due_date = ?, completed_at = ?, updated_at = ? WHERE id = ? AND user_id = ?',
+      [title, description, status, priority, category || 'Personal', dueDateStr, completedAt, now, id, userId]
     );
     return this.getById(id, userId);
   }

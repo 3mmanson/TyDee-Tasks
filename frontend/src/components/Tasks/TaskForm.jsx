@@ -9,6 +9,7 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
     description: '',
     status: 'pending',
     priority: 'Medium',
+    category: 'Personal',
     due_date: ''
   });
   const [dueDate, setDueDate] = useState('');
@@ -27,12 +28,13 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
         description: editingTask.description || '',
         status: editingTask.status || 'pending',
         priority: normalizePriority(editingTask.priority),
+        category: editingTask.category || 'Personal',
         due_date: editingTask.due_date || ''
       });
       setDueDate(dt ? dt.toISOString().split('T')[0] : '');
       setDueTime(dt ? dt.toTimeString().slice(0, 5) : '');
     } else {
-      setFormData({ title: '', description: '', status: 'pending', priority: 'Medium', due_date: '' });
+      setFormData({ title: '', description: '', status: 'pending', priority: 'Medium', category: 'Personal', due_date: '' });
       setDueDate('');
       setDueTime('');
     }
@@ -102,6 +104,19 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Add more details..."
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Category</label>
+            <select
+              className="w-full px-3 py-2 border outline-none focus:ring-2 focus:ring-[var(--color-active)]"
+              style={inputStyle}
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            >
+              <option value="DVK Print Shop">DVK Print Shop</option>
+              <option value="TyDee Tasks">TyDee Tasks</option>
+              <option value="Personal">Personal</option>
+            </select>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
