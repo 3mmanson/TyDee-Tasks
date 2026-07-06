@@ -9,7 +9,7 @@ import KpiHistoryChart from '../components/KpiHistoryChart';
 import CalendarView from '../components/CalendarView';
 import ErrorBoundary from '../components/UI/ErrorBoundary';
 import { useNotifications } from '../hooks/useNotifications';
-import { Search, History, List, CalendarDays } from 'lucide-react';
+import { Search, History, List, CalendarDays, X } from 'lucide-react';
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
@@ -19,6 +19,7 @@ const Dashboard = () => {
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [showActivity, setShowActivity] = useState(false);
+  const [showKpiHistory, setShowKpiHistory] = useState(false);
   const [view, setView] = useState('list');
 
   const fetchTasks = async () => {
@@ -118,13 +119,17 @@ const Dashboard = () => {
             <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>My Tasks</h1>
             <p className="text-sm sm:text-base" style={{ color: 'var(--text-muted)' }}>Manage your daily productivity</p>
           </div>
+          <button
+            onClick={() => setShowKpiHistory(true)}
+            className="flex items-center gap-2 text-sm font-medium transition"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            <History className="w-4 h-4" />
+            KPI History
+          </button>
         </div>
 
         <KpiDashboard />
-
-        <div className="mb-6">
-          <KpiHistoryChart />
-        </div>
 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
           <div className="relative flex-1">
@@ -201,6 +206,29 @@ const Dashboard = () => {
           onTaskCreated={handleCreateOrUpdate}
           editingTask={editingTask}
         />
+
+        {showKpiHistory && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowKpiHistory(false)}>
+            <div className="absolute inset-0" style={{ backgroundColor: 'var(--overlay)' }} />
+            <div
+              className="relative w-full max-w-3xl overflow-hidden shadow-2xl glow-always card-light"
+              style={{ backgroundColor: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)' }}
+            >
+              <div
+                className="px-6 py-4 border-b flex justify-between items-center"
+                style={{ borderColor: 'var(--stroke)' }}
+              >
+                <span className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>KPI History</span>
+                <button onClick={() => setShowKpiHistory(false)} style={{ color: 'var(--text-muted)' }} className="hover:opacity-70 transition">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-6">
+                <KpiHistoryChart />
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mt-8 pt-6" style={{ borderTop: '1px solid var(--stroke)' }}>
           <button
