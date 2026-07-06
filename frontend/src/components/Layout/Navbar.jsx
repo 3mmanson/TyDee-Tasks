@@ -45,11 +45,10 @@ const Navbar = ({ onNewTask }) => {
 
   return (
     <nav
-      className="sticky top-3 z-30 border-b px-4 sm:px-6 shadow-sm"
+      className="sticky top-0 z-30 flex items-center px-4 sm:px-6 py-3 shadow-sm"
       style={{
         backgroundColor: 'var(--bg-secondary)',
-        borderColor: 'var(--stroke)',
-        height: 'var(--nav-height)',
+        minHeight: 'var(--nav-height)',
         boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
       }}
     >
