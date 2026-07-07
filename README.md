@@ -8,8 +8,6 @@ More than just a task manager, TyDee Tasks represents an exploration of how AI c
 
 **Live Application:** [https://tydee-tasks.onrender.com](https://tydee-tasks.onrender.com)
 
-> This is the open-source community edition. For the full-featured version, see [TyDee Tasks Pro](https://github.com/3mmanson/TyDee-Tasks-Pro).
-
 ---
 
 ## The Problem
