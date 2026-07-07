@@ -98,7 +98,7 @@ const CalendarView = ({ onEditTask }) => {
       {/* Week day headers */}
       <div className="grid grid-cols-7 gap-1 mb-2">
         {weekDays.map(d => (
-          <div key={d} className="text-center text-xs font-medium py-2" style={{ color: 'var(--text-muted)' }}>
+          <div key={d} className="text-center text-[10px] sm:text-xs font-medium py-1 sm:py-2" style={{ color: 'var(--text-muted)' }}>
             {d}
           </div>
         ))}
@@ -119,7 +119,7 @@ const CalendarView = ({ onEditTask }) => {
             return (
               <div
                 key={dateKey}
-                className="relative min-h-[90px] sm:min-h-[110px] p-1.5 border transition cursor-pointer group/day"
+                className="relative min-h-[52px] sm:min-h-[100px] p-1 sm:p-1.5 border transition cursor-pointer group/day"
                 style={{
                   borderColor: 'var(--stroke)',
                   backgroundColor: today ? 'var(--color-active)' + '10' : 'var(--bg-secondary)',
@@ -129,14 +129,14 @@ const CalendarView = ({ onEditTask }) => {
                 onClick={() => handleDayClick(dateKey, dayTasks)}
               >
                 <div
-                  className="text-xs font-medium mb-1 text-right pr-1"
+                  className="text-[10px] sm:text-xs font-medium mb-0.5 sm:mb-1 text-right pr-0.5 sm:pr-1"
                   style={{ color: today ? 'var(--color-active)' : 'var(--text-muted)' }}
                 >
                   {format(day, 'd')}
                 </div>
 
                 {/* Task card stack */}
-                <div className="relative" style={{ minHeight: stackCount > 0 ? `${stackCount * 28 + 8}px` : '0' }}>
+                <div className="relative" style={{ minHeight: stackCount > 0 ? `${stackCount * 20 + 4}px` : '0' }}>
                   {dayTasks.slice(0, 3).map((task, i) => {
                     const pStyle = priorityColorMap[task.priority] || priorityColorMap.Medium;
                     const isTop = i === 0;
@@ -145,11 +145,11 @@ const CalendarView = ({ onEditTask }) => {
                     return (
                       <div
                         key={task.id}
-                        className="absolute left-0 right-0 px-1.5 py-1 text-[10px] font-medium truncate rounded transition-all duration-150"
+                        className="absolute left-0 right-0 px-1 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-medium truncate rounded transition-all duration-150"
                         style={{
                           backgroundColor: pStyle.bg,
                           color: pStyle.text,
-                          top: `${i * STACK_OFFSET}px`,
+                          top: `${i * 4}px`,
                           left: `${i * 1}px`,
                           right: `${i * -1}px`,
                           zIndex: totalVisible - i,
@@ -178,7 +178,7 @@ const CalendarView = ({ onEditTask }) => {
                 {openDay === dateKey && dayTasks.length > 1 && (
                   <div
                     ref={popoverRef}
-                    className="absolute top-full left-0 right-0 mt-1 rounded-xl shadow-xl overflow-hidden z-50 border"
+                    className="absolute bottom-full left-0 right-0 mb-1 rounded-xl shadow-xl overflow-hidden z-50 border"
                     style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--stroke)' }}
                     onClick={e => e.stopPropagation()}
                   >
