@@ -30,7 +30,7 @@ class Notification {
 
   static async exists(userId, taskId, type) {
     const rows = await query(
-      'SELECT id FROM notifications WHERE user_id = ? AND task_id = ? AND type = ? AND created_at > datetime("now", "-1 hour")',
+      'SELECT id FROM notifications WHERE user_id = ? AND task_id = ? AND type = ? AND created_at > datetime(\'now\', \'-1 hour\')',
       [userId, taskId, type]
     );
     return rows.length > 0;
