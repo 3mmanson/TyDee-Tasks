@@ -116,7 +116,7 @@ const TaskItem = ({ task, onDelete, onEdit, onToggleStatus }) => {
 
         {/* Hover actions */}
         <div
-          className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
           style={{ transitionDuration: '150ms' }}
         >
           <button

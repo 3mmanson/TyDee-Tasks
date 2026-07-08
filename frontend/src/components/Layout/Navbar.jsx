@@ -179,7 +179,7 @@ const Navbar = ({ onNewTask }) => {
           {user?.is_admin ? (
             <a
               href="/admin"
-              className="hidden sm:flex p-2 rounded-xl transition"
+              className="flex p-2 rounded-xl transition"
               style={{ color: 'var(--text-secondary)' }}
               onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-hover)'}
               onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
