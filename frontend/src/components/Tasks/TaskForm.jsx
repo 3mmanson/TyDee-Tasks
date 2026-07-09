@@ -3,7 +3,7 @@ import { api } from '../../api/api';
 import { toLocalISOString } from '../../utils/dateUtils';
 import { X } from 'lucide-react';
 
-const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask, voiceParsedData }) => {
+const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -34,24 +34,12 @@ const TaskForm = ({ isOpen, onClose, onTaskCreated, editingTask, voiceParsedData
       });
       setDueDate(dt ? dt.toISOString().split('T')[0] : '');
       setDueTime(dt ? dt.toTimeString().slice(0, 5) : '');
-    } else if (voiceParsedData) {
-      const dt = voiceParsedData.due_date ? new Date(voiceParsedData.due_date) : null;
-      setFormData({
-        title: voiceParsedData.title || '',
-        description: voiceParsedData.description || '',
-        status: 'pending',
-        priority: normalizePriority(voiceParsedData.priority),
-        category: voiceParsedData.category || 'Personal',
-        due_date: voiceParsedData.due_date || ''
-      });
-      setDueDate(dt ? dt.toISOString().split('T')[0] : '');
-      setDueTime(dt ? dt.toTimeString().slice(0, 5) : '');
     } else {
       setFormData({ title: '', description: '', status: 'pending', priority: 'Medium', category: 'Personal', due_date: '' });
       setDueDate('');
       setDueTime('');
     }
-  }, [editingTask, voiceParsedData]);
+  }, [editingTask]);
 
   if (!isOpen) return null;
 

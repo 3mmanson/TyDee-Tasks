@@ -8,7 +8,6 @@ import KpiDashboard from '../components/KpiDashboard';
 import KpiHistoryChart from '../components/KpiHistoryChart';
 import CalendarView from '../components/CalendarView';
 import ErrorBoundary from '../components/UI/ErrorBoundary';
-import VoiceButton from '../components/VoiceButton';
 import { useNotifications } from '../hooks/useNotifications';
 import { Search, History, List, CalendarDays, X } from 'lucide-react';
 
@@ -16,7 +15,6 @@ const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
-  const [voiceParsedData, setVoiceParsedData] = useState(null);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -112,15 +110,9 @@ const Dashboard = () => {
     color: active ? '#fff' : 'var(--text-secondary)',
   });
 
-  const handleVoiceParsed = (parsedData) => {
-    setEditingTask(null);
-    setVoiceParsedData(parsedData);
-    setIsFormOpen(true);
-  };
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      <Navbar onNewTask={() => { setEditingTask(null); setVoiceParsedData(null); setIsFormOpen(true); }} />
+      <Navbar onNewTask={() => { setEditingTask(null); setIsFormOpen(true); }} />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
@@ -210,10 +202,9 @@ const Dashboard = () => {
 
         <TaskForm
           isOpen={isFormOpen}
-          onClose={() => { setIsFormOpen(false); setEditingTask(null); setVoiceParsedData(null); }}
+          onClose={() => { setIsFormOpen(false); setEditingTask(null); }}
           onTaskCreated={handleCreateOrUpdate}
           editingTask={editingTask}
-          voiceParsedData={voiceParsedData}
         />
 
         {showKpiHistory && (
@@ -252,7 +243,6 @@ const Dashboard = () => {
           {showActivity && <ActivityLog />}
         </div>
       </main>
-      <VoiceButton onParsed={handleVoiceParsed} />
     </div>
   );
 };
