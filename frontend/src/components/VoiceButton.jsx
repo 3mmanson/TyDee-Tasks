@@ -14,17 +14,11 @@ const VoiceButton = ({ onParsed }) => {
   const [manualText, setManualText] = useState('');
   const recognitionRef = useRef(null);
   const finalTextRef = useRef('');
-
-  const stopListening = useCallback(() => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      recognitionRef.current = null;
-    }
-    setListening(false);
-  }, []);
+  const processingRef = useRef(false);
 
   const parseAndFill = useCallback(async (text) => {
-    if (!text.trim()) return;
+    if (!text.trim() || processingRef.current) return;
+    processingRef.current = true;
     setParsing(true);
     setError(null);
     try {
@@ -37,6 +31,7 @@ const VoiceButton = ({ onParsed }) => {
       setError(err.message || 'Failed to parse');
     } finally {
       setParsing(false);
+      processingRef.current = false;
     }
   }, [onParsed]);
 
@@ -45,6 +40,14 @@ const VoiceButton = ({ onParsed }) => {
       parseAndFill(manualText.trim());
     }
   };
+
+  const stopListening = useCallback(() => {
+    if (recognitionRef.current) {
+      try { recognitionRef.current.abort(); } catch {}
+      recognitionRef.current = null;
+    }
+    setListening(false);
+  }, []);
 
   const toggleListening = useCallback(() => {
     if (listening) {
@@ -57,14 +60,15 @@ const VoiceButton = ({ onParsed }) => {
       return;
     }
 
+    processingRef.current = false;
+    finalTextRef.current = '';
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
-    recognitionRef.current = recognition;
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
-
-    finalTextRef.current = '';
+    recognitionRef.current = recognition;
 
     recognition.onresult = (event) => {
       let interim = '';
@@ -80,19 +84,20 @@ const VoiceButton = ({ onParsed }) => {
     };
 
     recognition.onerror = (event) => {
-      if (event.error !== 'aborted') {
+      if (event.error !== 'aborted' && event.error !== 'no-speech') {
         setError('Microphone access denied or error occurred');
       }
-      stopListening();
+      setListening(false);
+      recognitionRef.current = null;
     };
 
     recognition.onend = () => {
+      recognitionRef.current = null;
       setListening(false);
+      if (processingRef.current) return;
       const text = finalTextRef.current.trim();
       if (text) {
         parseAndFill(text);
-      } else {
-        setError('No speech detected. Try again or type your task.');
       }
     };
 
@@ -115,11 +120,7 @@ const VoiceButton = ({ onParsed }) => {
         }}
         title={listening ? 'Stop listening' : 'Voice create task'}
       >
-        {listening ? (
-          <MicOff className="w-6 h-6" />
-        ) : (
-          <Mic className="w-6 h-6" />
-        )}
+        {listening ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
       </button>
 
       {/* Listening overlay */}
@@ -148,7 +149,7 @@ const VoiceButton = ({ onParsed }) => {
         </div>
       )}
 
-      {/* Text input fallback (Firefox, unsupported browsers) */}
+      {/* Text input fallback */}
       {showTextInput && !listening && !parsing && (
         <div
           className="fixed bottom-24 right-6 z-40 w-80 p-4 rounded-xl shadow-xl border"
