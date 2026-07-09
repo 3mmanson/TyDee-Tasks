@@ -79,6 +79,11 @@ export const api = {
       const qs = params.toString();
       return request(`/tasks/all${qs ? '?' + qs : ''}`, { method: 'DELETE' });
     },
+    parse: (text) =>
+      request('/tasks/parse', {
+        method: 'POST',
+        body: JSON.stringify({ text }),
+      }),
   },
   notifications: {
     getAll: () => request('/notifications'),

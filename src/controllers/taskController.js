@@ -1,6 +1,7 @@
 const Task = require('../models/Task');
 const ActivityLog = require('../models/ActivityLog');
 const { validateTask, validateTaskUpdate } = require('../validators/taskValidator');
+const { parseTaskFromText } = require('../services/gemini');
 
 const taskController = {
   async getAllTasks(req, res) {
@@ -114,6 +115,21 @@ const taskController = {
       res.json({ success: true, message: 'All tasks cleared' });
     } catch (err) {
       res.status(500).json({ success: false, error: 'Server error' });
+    }
+  },
+
+  async parseTask(req, res) {
+    try {
+      const { text } = req.body;
+      if (!text || !text.trim()) {
+        return res.status(400).json({ success: false, error: 'Text is required' });
+      }
+
+      const parsed = await parseTaskFromText(text);
+      res.json({ success: true, data: parsed });
+    } catch (err) {
+      console.error('parseTask error:', err);
+      res.status(500).json({ success: false, error: 'Failed to parse task', details: err.message });
     }
   }
 };

@@ -9,6 +9,9 @@ router.use(authMiddleware);
 // GET all tasks (supports ?view=calendar&month=YYYY-MM)
 router.get('/', (req, res) => taskController.getAllTasks(req, res));
 
+// POST parse natural language into task fields
+router.post('/parse', (req, res) => taskController.parseTask(req, res));
+
 // GET task by ID
 router.get('/:id', (req, res) => taskController.getTaskById(req, res));
 
