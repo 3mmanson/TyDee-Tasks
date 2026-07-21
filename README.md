@@ -1,12 +1,14 @@
 # TyDee Tasks
 
+> **Note:** The live application has moved from [Render](https://tydee-tasks.onrender.com) to [Vercel](https://tydee-tasks-pro.vercel.app). The Render deployment is no longer active.
+
 TyDee Tasks is a task management platform designed to help individuals organize, track, and manage their work more effectively through a simple and intuitive interface.
 
 The project was built as an end-to-end exercise in product development and AI-assisted software engineering, covering product planning, user experience design, backend architecture, authentication, deployment, and continuous improvement.
 
 More than just a task manager, TyDee Tasks represents an exploration of how AI can accelerate software development while still requiring human judgment, problem-solving, and ownership.
 
-**Live Application:** [https://tydee-tasks.onrender.com](https://tydee-tasks.onrender.com)
+**Live Application:** [https://tydee-tasks-pro.vercel.app](https://tydee-tasks-pro.vercel.app)
 
 ---
 
